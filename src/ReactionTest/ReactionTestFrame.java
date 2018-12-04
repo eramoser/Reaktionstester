@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -42,6 +44,16 @@ public class ReactionTestFrame extends JFrame implements Info {
 
         add(buttonsPanel, BorderLayout.CENTER);
         add(infoLabel, BorderLayout.SOUTH);
+
+        addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                client.send(Messages);
+                e.getWindow().dispose();
+            }
+        });
 
         setVisible(true);
     }

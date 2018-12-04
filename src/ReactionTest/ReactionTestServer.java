@@ -27,6 +27,7 @@ public class ReactionTestServer {
                 }
             }
             System.out.println("Message recieved: " + actionEvent.getActionCommand());
+            System.out.println("Message Type: " + Messages.getTypeOfMessage(actionEvent.getActionCommand()));
         }
     };
 
