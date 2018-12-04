@@ -1,4 +1,4 @@
-package Messages;
+package ReactionTest.Messages;
 
 public class ClientLogOff {
 }

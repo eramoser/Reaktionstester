@@ -1,5 +1,4 @@
-import java.io.IOException;
-import java.net.Socket;
+package ReactionTest;
 
 public class ClientApplication {
     public static void main(String[] args) {
