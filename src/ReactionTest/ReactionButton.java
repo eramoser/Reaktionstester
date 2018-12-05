@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 
 /**
  * Represents a button which can be enabled or disabled
- * Test
  */
 public class ReactionButton extends JButton {
     private int row;
