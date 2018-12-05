@@ -49,6 +49,7 @@ public class ReactionButtonsPanel extends JPanel {
             currentEndTime = System.currentTimeMillis();
 
             info.info("Time: " + getTimeDuration() + " Time before Start: " + timeBeforeStart + " Number of Buttons: " + currentButtons);
+            info.getClient().send(Messages.getFinishedMoveMessage(getTimeDuration()));
             startWithRandomButtons();
         }
     }

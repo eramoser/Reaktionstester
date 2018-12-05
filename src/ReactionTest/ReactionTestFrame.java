@@ -11,7 +11,7 @@ public class ReactionTestFrame extends JFrame implements Info {
 
     private ReactionButtonsPanel buttonsPanel;
     private JLabel infoLabel = new JLabel(ReactionTestConstants.START_INFO_TEXT);
-    private ReactionTestClient client;
+    public ReactionTestClient client;
 
     public ReactionTestFrame() {
         setTitle(ReactionTestConstants.FRAME_TITLE);
@@ -47,10 +47,13 @@ public class ReactionTestFrame extends JFrame implements Info {
     }
 
     @Override
+    public ReactionTestClient getClient() {
+        return client;
+    }
+
+    @Override
     public void info(String info) {
         infoLabel.setText(info);
-
-        client.send(info);
     }
 
     @Override

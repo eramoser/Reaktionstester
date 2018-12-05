@@ -8,7 +8,7 @@ public class Messages {
         return messageType + ";" + info;
     }
 
-    public static String getFinishedMoveMessage(){
-        return getMessage(GAME_START, )
+    public static String getFinishedMoveMessage(float time){
+        return getMessage(GAME_START, Float.toString(time));
     }
 }
