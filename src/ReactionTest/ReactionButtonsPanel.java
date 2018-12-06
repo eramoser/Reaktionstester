@@ -1,5 +1,6 @@
 package ReactionTest;
 
+import ReactionTest.Messages.ClientInfo;
 import ReactionTest.Messages.GameMove;
 
 import javax.swing.*;
@@ -52,8 +53,13 @@ public class ReactionButtonsPanel extends JPanel {
 
             info.info("Time: " + getTimeDuration() + " Time before Start: " + timeBeforeStart + " Number of Buttons: " + currentButtons);
             GameMove gameMove = new GameMove();
-            gameMove.test = 30;
+            gameMove.time = getTimeDuration();
             info.getClient().send(gameMove);
+
+
+            ClientInfo clientInfo = new ClientInfo();
+            clientInfo.playerName = "Rams";
+            info.getClient().send(clientInfo);
             //info.getClient().send(Messages.getFinishedMoveMessage(getTimeDuration()));
             startWithRandomButtons();
         }

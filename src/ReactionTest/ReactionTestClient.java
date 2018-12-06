@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class ReactionTestClient {
     private Socket connection;
     private boolean running = false;
+    public String playerName = "Anonymous";
 
     private ObjectInputStream receieve;
     private ObjectOutputStream send;

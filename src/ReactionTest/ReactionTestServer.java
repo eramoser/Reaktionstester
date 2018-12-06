@@ -1,5 +1,8 @@
 package ReactionTest;
 
+import ReactionTest.Messages.ClientInfo;
+import ReactionTest.Messages.GameMove;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serializable;
@@ -22,6 +25,21 @@ public class ReactionTestServer {
             if (actionEvent.getSource().getClass().equals(ReactionTestClient.class)) {
                 ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
                 Object objectReceived = client.getIn();
+
+                System.out.println(client.playerName + " sent a Message: ");
+
+                // Handle if Object GameMove is received
+                if (objectReceived.getClass().equals(GameMove.class)){
+                    System.out.println("Class Game Move received");
+                }
+
+                // Handle if Object ClientInfo is received
+                if (objectReceived.getClass().equals(ClientInfo.class)){
+                    ClientInfo clientInfo = (ClientInfo) objectReceived;
+                    if (client.playerName != null) {
+                        client.playerName = clientInfo.playerName;
+                    }
+                }
 
                 // sende nachricht an alle clients
                 // die dem server derzeit bekannt sind
