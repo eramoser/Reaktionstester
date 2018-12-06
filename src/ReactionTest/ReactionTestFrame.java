@@ -50,7 +50,7 @@ public class ReactionTestFrame extends JFrame implements Info {
             @Override
             public void windowClosing(WindowEvent e)
             {
-                client.send(Messages);
+                //client.send(Messages);
                 e.getWindow().dispose();
             }
         });

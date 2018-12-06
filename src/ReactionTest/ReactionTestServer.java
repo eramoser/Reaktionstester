@@ -2,6 +2,7 @@ package ReactionTest;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -18,16 +19,22 @@ public class ReactionTestServer {
     private ActionListener broadcastListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            // sende nachricht an alle clients
-            // die dem server derzeit bekannt sind
-            for (ReactionTestClient client:clients) {
-                if(!client.equals(actionEvent.getSource())){
-                    client.send(actionEvent.getActionCommand());
+            if (actionEvent.getSource().getClass().equals(ReactionTestClient.class)) {
+                ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
+                Object objectReceived = client.getIn();
 
+                // sende nachricht an alle clients
+                // die dem server derzeit bekannt sind
+                for (ReactionTestClient clienti : clients) {
+                    if (!clienti.equals(actionEvent.getSource())) {
+                        client.send((Serializable) objectReceived);
+
+                    }
                 }
+                System.out.println("Object received: " + objectReceived.getClass().toString());
+            }else {
+                System.out.println("Received Message from other class than ReactionTestClient");
             }
-            System.out.println("Message recieved: " + actionEvent.getActionCommand());
-            System.out.println("Message Type: " + Messages.getTypeOfMessage(actionEvent.getActionCommand()));
         }
     };
 

@@ -1,5 +1,7 @@
 package ReactionTest;
 
+import ReactionTest.Messages.GameMove;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -49,7 +51,10 @@ public class ReactionButtonsPanel extends JPanel {
             currentEndTime = System.currentTimeMillis();
 
             info.info("Time: " + getTimeDuration() + " Time before Start: " + timeBeforeStart + " Number of Buttons: " + currentButtons);
-            info.getClient().send(Messages.getFinishedMoveMessage(getTimeDuration()));
+            GameMove gameMove = new GameMove();
+            gameMove.test = 30;
+            info.getClient().send(gameMove);
+            //info.getClient().send(Messages.getFinishedMoveMessage(getTimeDuration()));
             startWithRandomButtons();
         }
     }

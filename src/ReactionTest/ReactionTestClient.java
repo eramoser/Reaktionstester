@@ -2,9 +2,7 @@ package ReactionTest;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -12,8 +10,10 @@ public class ReactionTestClient {
     private Socket connection;
     private boolean running = false;
 
-    private DataInputStream receieve;
-    private DataOutputStream send;
+    private ObjectInputStream receieve;
+    private ObjectOutputStream send;
+
+    private Object in;
 
     private ArrayList<ActionListener> listener = new ArrayList<>();
 
@@ -25,8 +25,8 @@ public class ReactionTestClient {
         this.running = true;
 
         try {
-            this.receieve = new DataInputStream(connection.getInputStream());
-            this.send = new DataOutputStream(connection.getOutputStream());
+            this.send = new ObjectOutputStream(new DataOutputStream(connection.getOutputStream()));
+            this.receieve = new ObjectInputStream(new DataInputStream(connection.getInputStream()));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,12 +38,14 @@ public class ReactionTestClient {
                 while (running) {
                     try {
                         if (receieve != null) {
-                            String message = receieve.readUTF();
+                            in = receieve.readObject();
 
                             // Verarbeite Nachricht
-                            notifyListener(message);
+                            notifyListener(ReactionTestClient.this);
                         }
                     } catch (IOException e) {
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -51,10 +53,14 @@ public class ReactionTestClient {
         t.start();
     }
 
-    public void send(String message) {
+    public Object getIn(){
+        return in;
+    }
+
+    public void send(Serializable object) {
         if (this.send != null) {
             try {
-                send.writeUTF(message);
+                send.writeObject(object);
                 send.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -66,9 +72,9 @@ public class ReactionTestClient {
         this.running = false;
     }
 
-    public void notifyListener(String message) {
+    public void notifyListener(Object object) {
         for (ActionListener listener : listener) {
-            listener.actionPerformed(new ActionEvent(this, 0, message));
+            listener.actionPerformed(new ActionEvent(object, 0, object.toString()));
         }
     }
 
