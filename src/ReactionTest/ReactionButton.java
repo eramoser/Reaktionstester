@@ -23,6 +23,15 @@ public class ReactionButton extends JButton {
         });
         disableReaction();
     }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
     public void disableReaction(){
         this.setBackground(ReactionTestConstants.DISABLED_COLOR);
         this.setEnabled(false);

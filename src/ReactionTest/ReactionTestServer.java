@@ -2,6 +2,7 @@ package ReactionTest;
 
 import ReactionTest.Messages.ClientInfo;
 import ReactionTest.Messages.GameMove;
+import ReactionTest.Messages.StartMove;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +32,11 @@ public class ReactionTestServer {
                 // Handle if Object GameMove is received
                 if (objectReceived.getClass().equals(GameMove.class)){
                     System.out.println("Class Game Move received");
+
+                    StartMove startMove = new StartMove();
+                    for (ReactionTestClient clienti : clients) {
+                        clienti.send(startMove);
+                    }
                 }
 
                 // Handle if Object ClientInfo is received
@@ -44,10 +50,7 @@ public class ReactionTestServer {
                 // sende nachricht an alle clients
                 // die dem server derzeit bekannt sind
                 for (ReactionTestClient clienti : clients) {
-                    if (!clienti.equals(actionEvent.getSource())) {
-                        client.send((Serializable) objectReceived);
 
-                    }
                 }
                 System.out.println("Object received: " + objectReceived.getClass().toString());
             }else {
@@ -76,6 +79,11 @@ public class ReactionTestServer {
                         clients.add(p);
                         p.start();
                         System.out.println("Client added");
+
+                        StartMove startMove = new StartMove();
+                        for (ReactionTestClient clienti : clients) {
+                            clienti.send(startMove);
+                        }
                     }
 
                 } catch (Exception e) {

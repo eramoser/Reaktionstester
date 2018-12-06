@@ -24,7 +24,7 @@ public class ReactionTestFrame extends JFrame implements Info {
         ImageIcon img = new ImageIcon("Logo_440x440.png");
         setIconImage(img.getImage());
 
-        buttonsPanel = new ReactionButtonsPanel(this);
+
 
         // TODO: Lines for testing
         try {
@@ -40,6 +40,9 @@ public class ReactionTestFrame extends JFrame implements Info {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        buttonsPanel = new ReactionButtonsPanel(this);
+        //buttonsPanel.initialStart();
 
         username.addActionListener(new ActionListener() {
             @Override
