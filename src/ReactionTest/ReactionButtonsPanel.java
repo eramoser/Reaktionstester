@@ -55,12 +55,6 @@ public class ReactionButtonsPanel extends JPanel {
             GameMove gameMove = new GameMove();
             gameMove.time = getTimeDuration();
             info.getClient().send(gameMove);
-
-
-            ClientInfo clientInfo = new ClientInfo();
-            clientInfo.playerName = "Rams";
-            info.getClient().send(clientInfo);
-            //info.getClient().send(Messages.getFinishedMoveMessage(getTimeDuration()));
             startWithRandomButtons();
         }
     }
@@ -167,5 +161,19 @@ public class ReactionButtonsPanel extends JPanel {
 
     private void enableButton(int row, int col){
         buttons[row][col].enableReaction();
+    }
+
+    // TODO: USE this on server side to create same button array for every client
+    public static ReactionButton[][] getInitializedButtonArray(){
+        ReactionButton[][] buttons = new ReactionButton[ReactionTestConstants.ROWS_BUTTONS][ReactionTestConstants.COLS_BUTTONS];
+
+        for (int i = 0; i< ReactionTestConstants.ROWS_BUTTONS; i++){
+            for (int j = 0; j< ReactionTestConstants.COLS_BUTTONS; j++){
+                ReactionButton button = new ReactionButton(i, j);
+                buttons[i][j] = button;
+            }
+        }
+
+        return buttons;
     }
 }
