@@ -14,6 +14,8 @@ public class ReactionTestServer {
     private boolean running = false;
     private ArrayList<ReactionTestClient> clients = new ArrayList<>();
 
+    private String[] defaultPlayerNames = {"Kurz aufs Klo Jacki", "Gastronaut"};
+
     public ReactionTestServer(int port) {
         this.port = port;
     }
