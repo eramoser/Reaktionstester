@@ -15,9 +15,15 @@ public class ReactionTestServer {
     private ArrayList<ReactionTestClient> clients = new ArrayList<>();
 
     private String[] defaultPlayerNames = {"\"Nur-Kurz-aufs-Klo\" Jack", "Kopfrechnengenie Wenzl","Golden Times J.W.","Tesla Jacki","Dirty JackSchabrack","\"Des-Wochnend-dring-I-nix\n Waunz"};
+    private ArrayList<String> defaultNamesList = new ArrayList<>();
+    private ArrayList<String> availableNames = new ArrayList<>();
 
     public ReactionTestServer(int port) {
         this.port = port;
+        for (String name:defaultPlayerNames) {
+            availableNames.add(name);
+            defaultNamesList.add(name);
+        }
     }
 
     private ActionListener broadcastListener = new ActionListener() {
@@ -68,7 +74,8 @@ public class ReactionTestServer {
                 // Handle if Object ClientInfo is received
                 if (objectReceived.getClass().equals(ClientInfo.class)){
                     ClientInfo clientInfo = (ClientInfo) objectReceived;
-                    if (client.playerName != null) {
+                    if (clientInfo.playerName != null) {
+                        freeNameIfDefault(client.playerName);
                         client.playerName = clientInfo.playerName;
                     }
                 }
@@ -76,6 +83,7 @@ public class ReactionTestServer {
                 // Handle if Client Disconnects
                 if (objectReceived.getClass().equals(Disconnect.class)){
                     clients.remove(client);
+                    freeNameIfDefault(client.playerName);
                     System.out.println("Client Disconnected");
                 }
 
@@ -90,6 +98,19 @@ public class ReactionTestServer {
             }
         }
     };
+
+    private void freeNameIfDefault(String name){
+        if (defaultNamesList.contains(name)&&(!availableNames.contains(name))){
+            availableNames.add(name);
+        }
+    }
+
+    private String getRandomDefaultName(){
+        String name;
+        name = availableNames.get(ReactionButtonsPanel.getRandInt(0, availableNames.size()));
+        availableNames.remove(name);
+        return name;
+    }
 
     private boolean allReadyToPlay(){
         boolean readyToPlay = true;
@@ -121,6 +142,8 @@ public class ReactionTestServer {
                         clients.add(p);
                         p.start();
                         System.out.println("Client added");
+                        p.playerName = getRandomDefaultName();
+                        p.send(new ClientInfo(p.playerName));
 
                         StartMove startMove = new StartMove();
                         for (ReactionTestClient clienti : clients) {

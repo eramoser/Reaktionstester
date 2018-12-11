@@ -45,6 +45,14 @@ public class ReactionTestFrame extends JFrame implements Info {
                         if (objectReceived.getClass().equals(PlayerStats.class)){
                             info(objectReceived.toString());
                         }
+
+                        // Handle Client Info (New Player Name received)
+                        if (objectReceived.getClass().equals(ClientInfo.class)){
+                            ClientInfo clientInfo = (ClientInfo)objectReceived;
+                            if (clientInfo.playerName != null){
+                                username.setText(clientInfo.playerName);
+                            }
+                        }
                     }
                 }
             });

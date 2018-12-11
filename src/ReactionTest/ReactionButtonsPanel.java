@@ -144,7 +144,7 @@ public class ReactionButtonsPanel extends JPanel {
         return button;
     }
 
-    private static int getRandInt(int min, int maxExcluded) {
+    public static int getRandInt(int min, int maxExcluded) {
         return ThreadLocalRandom.current().nextInt(min, maxExcluded);
     }
 
