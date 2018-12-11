@@ -31,12 +31,21 @@ public class ReactionTestServer {
                 if (objectReceived.getClass().equals(GameMove.class)){
                     System.out.println("Class Game Move received");
                     client.state = ReactionTestClient.READY_TO_START;
+                    client.time = ((GameMove)objectReceived).time;
 
                     if (allReadyToPlay()) {
                         StartMove startMove = new StartMove();
+                        PlayerStats playerStats = new PlayerStats();
+
+                        for (ReactionTestClient clienti : clients) {
+                            playerStats.addPlayer(clienti.playerName, clienti.time);
+                        }
+
                         for (ReactionTestClient clienti : clients) {
                             clienti.send(startMove);
                             clienti.state = ReactionTestClient.CURRENTLY_PLAYING;
+
+                            clienti.send(playerStats);
                         }
                     }else {
                         PlayersNotYetFinished playersNotYetFinished = new PlayersNotYetFinished();

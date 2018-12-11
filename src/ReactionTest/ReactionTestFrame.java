@@ -40,6 +40,11 @@ public class ReactionTestFrame extends JFrame implements Info {
                         if (objectReceived.getClass().equals(PlayersNotYetFinished.class)){
                             info(objectReceived.toString());
                         }
+
+                        // Handle if other Players are not Finished
+                        if (objectReceived.getClass().equals(PlayerStats.class)){
+                            info(objectReceived.toString());
+                        }
                     }
                 }
             });

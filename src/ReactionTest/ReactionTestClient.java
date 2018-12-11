@@ -10,6 +10,7 @@ public class ReactionTestClient {
     private Socket connection;
     private boolean running = false;
     public String playerName = "Anonymous";
+    public float time;
     public int state;
     public static final int READY_TO_START = 0;
     public static final int CURRENTLY_PLAYING = 1;
