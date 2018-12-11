@@ -1,7 +1,6 @@
 package ReactionTest;
 
-import ReactionTest.Messages.ClientInfo;
-import ReactionTest.Messages.Disconnect;
+import ReactionTest.Messages.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +32,15 @@ public class ReactionTestFrame extends JFrame implements Info {
             client.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    System.out.println("Message received: " + actionEvent.getActionCommand());
+                    if (actionEvent.getSource().getClass().equals(ReactionTestClient.class)) {
+                        ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
+                        Object objectReceived = client.getIn();
+
+                        // Handle if other Players are not Finished
+                        if (objectReceived.getClass().equals(PlayersNotYetFinished.class)){
+                            info(objectReceived.toString());
+                        }
+                    }
                 }
             });
         } catch (IOException e) {

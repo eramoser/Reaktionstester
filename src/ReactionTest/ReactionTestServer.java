@@ -1,9 +1,6 @@
 package ReactionTest;
 
-import ReactionTest.Messages.ClientInfo;
-import ReactionTest.Messages.Disconnect;
-import ReactionTest.Messages.GameMove;
-import ReactionTest.Messages.StartMove;
+import ReactionTest.Messages.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,10 +30,27 @@ public class ReactionTestServer {
                 // Handle if Object GameMove is received
                 if (objectReceived.getClass().equals(GameMove.class)){
                     System.out.println("Class Game Move received");
+                    client.state = ReactionTestClient.READY_TO_START;
 
-                    StartMove startMove = new StartMove();
-                    for (ReactionTestClient clienti : clients) {
-                        clienti.send(startMove);
+                    if (allReadyToPlay()) {
+                        StartMove startMove = new StartMove();
+                        for (ReactionTestClient clienti : clients) {
+                            clienti.send(startMove);
+                            clienti.state = ReactionTestClient.CURRENTLY_PLAYING;
+                        }
+                    }else {
+                        PlayersNotYetFinished playersNotYetFinished = new PlayersNotYetFinished();
+                        for (ReactionTestClient clienti:clients) {
+                            if (clienti.state != ReactionTestClient.READY_TO_START){
+                                playersNotYetFinished.playersNotFinished.add(clienti.playerName);
+                            }
+                        }
+
+                        for (ReactionTestClient clienti:clients) {
+                            if (clienti.state == ReactionTestClient.READY_TO_START){
+                                client.send(playersNotYetFinished);
+                            }
+                        }
                     }
                 }
 
@@ -65,6 +79,16 @@ public class ReactionTestServer {
             }
         }
     };
+
+    private boolean allReadyToPlay(){
+        boolean readyToPlay = true;
+        for (ReactionTestClient client:clients) {
+            if (client.state != ReactionTestClient.READY_TO_START){
+                readyToPlay = false;
+            }
+        }
+        return readyToPlay;
+    }
 
     public void start(){
         this.running = true;
