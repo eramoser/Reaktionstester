@@ -27,7 +27,7 @@ public class ReactionTestFrame extends JFrame implements Info {
         // TODO: Lines for testing
         try {
             client = new ReactionTestClient(new Socket(ReactionTestConstants.SERVER_HOST, ReactionTestConstants.SERVER_PORT));
-            client.start();
+
 
             client.addActionListener(new ActionListener() {
                 @Override
@@ -36,8 +36,11 @@ public class ReactionTestFrame extends JFrame implements Info {
                         ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
                         Object objectReceived = client.getIn();
 
+                        client.send(new ServerLog("Object received: " + objectReceived.getClass().toString()));
+
                         // Handle if other Players are not Finished
                         if (objectReceived.getClass().equals(PlayersNotYetFinished.class)){
+                            System.out.println("PlayersNotYetFinished received: "  + username.getText());
                             info(objectReceived.toString());
                         }
 
@@ -56,6 +59,7 @@ public class ReactionTestFrame extends JFrame implements Info {
                     }
                 }
             });
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,6 +93,8 @@ public class ReactionTestFrame extends JFrame implements Info {
                 e.getWindow().dispose();
             }
         });
+
+        client.start();
 
         setVisible(true);
     }

@@ -188,7 +188,6 @@ public class ReactionButtonsPanel extends JPanel {
         ReactionButton[] reactionButtons = new ReactionButton[rows.length];
 
         for (int i = 0; i < rows.length; i++) {
-            System.out.println(i);
             reactionButtons[i] = buttons[rows[i]][cols[i]];
         }
 

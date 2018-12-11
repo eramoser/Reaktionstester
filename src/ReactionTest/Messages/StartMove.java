@@ -17,7 +17,6 @@ public class StartMove implements Serializable {
 
     public StartMove() {
         time = ReactionButtonsPanel.getRandSeconds();
-        System.out.println(time);
         int[][] buttons = ReactionButtonsPanel.getRandomUniqueButtonNumbers();
         rows = buttons[0];
         cols = buttons[1];

@@ -14,7 +14,7 @@ public class ReactionTestServer {
     private boolean running = false;
     private ArrayList<ReactionTestClient> clients = new ArrayList<>();
 
-    private String[] defaultPlayerNames = {"\"Nur-Kurz-aufs-Klo\" Jack", "Kopfrechnengenie Wenzl","Golden Times J.W.","Tesla Jacki","Dirty JackSchabrack","\"Des-Wochnend-dring-I-nix\n Waunz"};
+    private String[] defaultPlayerNames = {"\"Nur-Kurz-aufs-Klo\" Jack", "Kopfrechnengenie Wenzl","Tesla Jacki","Dirty JackSchabrack","\"Des-Wochnend-dring-I-nix\" Waunz"};
     private ArrayList<String> defaultNamesList = new ArrayList<>();
     private ArrayList<String> availableNames = new ArrayList<>();
 
@@ -33,11 +33,8 @@ public class ReactionTestServer {
                 ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
                 Object objectReceived = client.getIn();
 
-                System.out.println(client.playerName + " sent a Message: ");
-
                 // Handle if Object GameMove is received
                 if (objectReceived.getClass().equals(GameMove.class)){
-                    System.out.println("Class Game Move received");
                     client.state = ReactionTestClient.READY_TO_START;
                     client.time = ((GameMove)objectReceived).time;
 
@@ -56,16 +53,12 @@ public class ReactionTestServer {
                             clienti.send(playerStats);
                         }
                     }else {
-                        PlayersNotYetFinished playersNotYetFinished = new PlayersNotYetFinished();
-                        for (ReactionTestClient clienti:clients) {
-                            if (clienti.state != ReactionTestClient.READY_TO_START){
-                                playersNotYetFinished.playersNotFinished.add(clienti.playerName);
-                            }
-                        }
+                        PlayersNotYetFinished playersNotYetFinished = getPlayersNotReady();
+
 
                         for (ReactionTestClient clienti:clients) {
                             if (clienti.state == ReactionTestClient.READY_TO_START){
-                                client.send(playersNotYetFinished);
+                                clienti.send(playersNotYetFinished);
                             }
                         }
                     }
@@ -84,7 +77,12 @@ public class ReactionTestServer {
                 if (objectReceived.getClass().equals(Disconnect.class)){
                     clients.remove(client);
                     freeNameIfDefault(client.playerName);
-                    System.out.println("Client Disconnected");
+                }
+
+                // Handle Server Log
+                if (objectReceived.getClass().equals(ServerLog.class)){
+                    ServerLog serverLog = (ServerLog)objectReceived;
+                    System.out.println("Message from " + client.playerName + ": " + serverLog.message);
                 }
 
                 // sende nachricht an alle clients
@@ -92,12 +90,21 @@ public class ReactionTestServer {
                 for (ReactionTestClient clienti : clients) {
 
                 }
-                System.out.println("Object received: " + objectReceived.getClass().toString());
             }else {
                 System.out.println("Received Message from other class than ReactionTestClient");
             }
         }
     };
+
+    private PlayersNotYetFinished getPlayersNotReady(){
+        PlayersNotYetFinished playersNotYetFinished = new PlayersNotYetFinished();
+        for (ReactionTestClient clienti:clients) {
+            if (clienti.state != ReactionTestClient.READY_TO_START){
+                playersNotYetFinished.playersNotFinished.add(clienti.playerName);
+            }
+        }
+        return playersNotYetFinished;
+    }
 
     private void freeNameIfDefault(String name){
         if (defaultNamesList.contains(name)&&(!availableNames.contains(name))){
@@ -141,13 +148,15 @@ public class ReactionTestServer {
                         p.addActionListener(broadcastListener);
                         clients.add(p);
                         p.start();
-                        System.out.println("Client added");
                         p.playerName = getRandomDefaultName();
                         p.send(new ClientInfo(p.playerName));
 
-                        StartMove startMove = new StartMove();
-                        for (ReactionTestClient clienti : clients) {
-                            clienti.send(startMove);
+                        if (clients.size() == 1){
+                            p.send(new StartMove());
+                            p.state = ReactionTestClient.CURRENTLY_PLAYING;
+                        }else{
+                            p.state = ReactionTestClient.READY_TO_START;
+                            p.send(getPlayersNotReady());
                         }
                     }
 

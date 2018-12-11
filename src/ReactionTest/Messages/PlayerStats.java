@@ -7,7 +7,9 @@ public class PlayerStats implements Serializable {
     ArrayList<StatsOfOnePlayer> players = new ArrayList<>();
 
     public void addPlayer(String playerName, float time){
-        players.add(new StatsOfOnePlayer(playerName, time));
+        if (time != 0) {
+            players.add(new StatsOfOnePlayer(playerName, time));
+        }
     }
 
     @Override
