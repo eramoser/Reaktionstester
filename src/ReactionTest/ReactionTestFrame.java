@@ -26,7 +26,7 @@ public class ReactionTestFrame extends JFrame implements Info {
 
         // TODO: Lines for testing
         try {
-            client = new ReactionTestClient(new Socket("localhost", ReactionTestConstants.SERVER_PORT));
+            client = new ReactionTestClient(new Socket(ReactionTestConstants.SERVER_HOST, ReactionTestConstants.SERVER_PORT));
             client.start();
 
             client.addActionListener(new ActionListener() {
