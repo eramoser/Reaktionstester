@@ -1,6 +1,7 @@
 package ReactionTest;
 
 import ReactionTest.Messages.ClientInfo;
+import ReactionTest.Messages.Disconnect;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,8 +24,6 @@ public class ReactionTestFrame extends JFrame implements Info {
         setLayout(new BorderLayout());
         ImageIcon img = new ImageIcon("Logo_440x440.png");
         setIconImage(img.getImage());
-
-
 
         // TODO: Lines for testing
         try {
@@ -66,7 +65,7 @@ public class ReactionTestFrame extends JFrame implements Info {
             @Override
             public void windowClosing(WindowEvent e)
             {
-                //client.send(Messages);
+                client.send(new Disconnect());
                 e.getWindow().dispose();
             }
         });

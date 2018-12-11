@@ -1,6 +1,7 @@
 package ReactionTest;
 
 import ReactionTest.Messages.ClientInfo;
+import ReactionTest.Messages.Disconnect;
 import ReactionTest.Messages.GameMove;
 import ReactionTest.Messages.StartMove;
 
@@ -45,6 +46,12 @@ public class ReactionTestServer {
                     if (client.playerName != null) {
                         client.playerName = clientInfo.playerName;
                     }
+                }
+
+                // Handle if Client Disconnects
+                if (objectReceived.getClass().equals(Disconnect.class)){
+                    clients.remove(client);
+                    System.out.println("Client Disconnected");
                 }
 
                 // sende nachricht an alle clients
