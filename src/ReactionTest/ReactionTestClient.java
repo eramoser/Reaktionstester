@@ -1,10 +1,15 @@
 package ReactionTest;
 
+import ReactionTest.Messages.Disconnect;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.*;
 
 public class ReactionTestClient {
     private Socket connection;
@@ -15,6 +20,8 @@ public class ReactionTestClient {
     public static final int READY_TO_START = 0;
     public static final int CURRENTLY_PLAYING = 1;
 
+    public static final int MAX_CONNECT_TIMEOUT_DELAY = 200; // in ms
+
     private ObjectInputStream receieve;
     private ObjectOutputStream send;
 
@@ -24,6 +31,10 @@ public class ReactionTestClient {
 
     public ReactionTestClient(Socket player) {
         this.connection = player;
+    }
+
+    public ReactionTestClient(String hostname) throws IOException {
+        this.connection = new Socket(hostname, ReactionTestConstants.SERVER_PORT);
     }
 
 
@@ -51,6 +62,7 @@ public class ReactionTestClient {
                             notifyListener(ReactionTestClient.this);
                         }
                     } catch (IOException e) {
+                        e.printStackTrace();
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -107,5 +119,51 @@ public class ReactionTestClient {
     public void addActionListener(ActionListener al) {
         listener.add(al);
     }
+
+    public static boolean canConnect(String hostName){
+        /*try {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    return false;
+                }
+            }, MAX_CONNECT_TIMEOUT_DELAY);
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }*/
+        Runnable handShakeTask = new Runnable() {
+            @Override
+            public void run() {
+                ReactionTestClient client = null;
+                try {
+                    client = new ReactionTestClient(hostName);
+                    client.start();
+                    client.send(new Disconnect());
+                    client.stop();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        try {
+            Future<Boolean> future = executorService.submit(handShakeTask, true);
+            executorService.shutdown();
+            return future.get(MAX_CONNECT_TIMEOUT_DELAY/1000, TimeUnit.SECONDS);
+        } catch (TimeoutException ex) {
+        } catch (InterruptedException | ExecutionException e) {
+            // handle exception
+        }
+        return false;
+    }
+
 
 }
