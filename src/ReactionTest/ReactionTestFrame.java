@@ -3,11 +3,15 @@ package ReactionTest;
 import ReactionTest.Messages.*;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ReactionTestFrame extends JFrame implements Info {
 
@@ -27,23 +31,40 @@ public class ReactionTestFrame extends JFrame implements Info {
         setIconImage(img.getImage());
 
 
-        username.addActionListener(new ActionListener() {
+        username.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if (client != null) {
-                    ClientInfo clientInfo = new ClientInfo();
-                    clientInfo.playerName = username.getText();
-                    client.send(clientInfo);
-                }
+            public void insertUpdate(DocumentEvent e) {
+                usernameChanged();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                usernameChanged();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                usernameChanged();
             }
         });
 
-        hostname.addActionListener(new ActionListener() {
+        hostname.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                connectToClient(hostname.getText());
+            public void insertUpdate(DocumentEvent e) {
+                hostNameChanged();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                hostNameChanged();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                hostNameChanged();
             }
         });
+
 
         username.setSize(200, 10);
 
@@ -80,6 +101,30 @@ public class ReactionTestFrame extends JFrame implements Info {
 
 
         setVisible(true);
+    }
+
+    private void hostNameChanged() {
+        String hostnamePrev = this.hostname.getText();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (hostnamePrev.equals(hostname.getText())) {
+
+                    connectToClient(hostname.getText());
+
+                }
+            }
+        }, 1000);
+
+    }
+
+    private void usernameChanged() {
+        if (client != null) {
+            ClientInfo clientInfo = new ClientInfo();
+            clientInfo.playerName = this.username.getText();
+            client.send(clientInfo);
+        }
     }
 
     private void connectToClient(String hostname) {
@@ -139,6 +184,9 @@ public class ReactionTestFrame extends JFrame implements Info {
                 e.printStackTrace();
             }
         } else {
+            if (client != null) {
+                client.send(new Disconnect());
+            }
             buttonsPanel.setClient(null);
             error("Can't connect to server");
         }
