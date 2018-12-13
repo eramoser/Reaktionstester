@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 
 public class ReactionTestFrame extends JFrame implements Info {
@@ -60,41 +61,53 @@ public class ReactionTestFrame extends JFrame implements Info {
                 }
             });
 
+
+
+            addWindowListener(new WindowAdapter()
+            {
+                @Override
+                public void windowClosing(WindowEvent e)
+                {
+                    client.send(new Disconnect());
+                    e.getWindow().dispose();
+                }
+            });
+
+
+
+            buttonsPanel = new ReactionButtonsPanel(this);
+            add(buttonsPanel, BorderLayout.CENTER);
+
+        } catch (ConnectException e){
+            error("Connection Refused");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        buttonsPanel = new ReactionButtonsPanel(this);
         //buttonsPanel.initialStart();
 
         username.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                ClientInfo clientInfo = new ClientInfo();
-                clientInfo.playerName = username.getText();
-                client.send(clientInfo);
+                if (client != null) {
+                    ClientInfo clientInfo = new ClientInfo();
+                    clientInfo.playerName = username.getText();
+                    client.send(clientInfo);
+                }
             }
         });
+
         username.setSize(200, 10);
 
         JPanel usernamePanel = new JPanel(new BorderLayout());
         usernamePanel.add(new JLabel("Username: "), BorderLayout.WEST);
         usernamePanel.add(username, BorderLayout.CENTER);
         add(usernamePanel, BorderLayout.NORTH);
-        add(buttonsPanel, BorderLayout.CENTER);
         add(infoLabel, BorderLayout.SOUTH);
 
-        addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                client.send(new Disconnect());
-                e.getWindow().dispose();
-            }
-        });
-
-        client.start();
+        if (client != null) {
+            client.start();
+        }
 
         setVisible(true);
     }

@@ -14,6 +14,8 @@ public class ReactionTestServer {
     private boolean running = false;
     private ArrayList<ReactionTestClient> clients = new ArrayList<>();
 
+    private int anonymIndex = 0;
+
     private String[] defaultPlayerNames = {"\"Nur-Kurz-aufs-Klo\" Jack", "Kopfrechnengenie Wenzl","Tesla Jacki","Dirty JackSchabrack","\"Des-Wochnend-dring-I-nix\" Waunz"};
     private ArrayList<String> defaultNamesList = new ArrayList<>();
     private ArrayList<String> availableNames = new ArrayList<>();
@@ -113,9 +115,16 @@ public class ReactionTestServer {
     }
 
     private String getRandomDefaultName(){
-        String name;
-        name = availableNames.get(ReactionButtonsPanel.getRandInt(0, availableNames.size()));
-        availableNames.remove(name);
+        String name = "";
+        if (availableNames.size() > 0) {
+            name = availableNames.get(ReactionButtonsPanel.getRandInt(0, availableNames.size()));
+            availableNames.remove(name);
+        }else {
+            if (anonymIndex > 10000000){
+                anonymIndex = 0;
+            }
+            name = "Anonym " + anonymIndex++;
+        }
         return name;
     }
 

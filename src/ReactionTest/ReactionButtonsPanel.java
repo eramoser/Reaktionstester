@@ -44,16 +44,20 @@ public class ReactionButtonsPanel extends JPanel {
         }
 
         if (info != null){
-            info.getClient().addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ReactionTestClient client = (ReactionTestClient)e.getSource();
-                    if (client.getIn().getClass().equals(StartMove.class)){
-                        StartMove startMove = (StartMove) client.getIn();
-                        ReactionButtonsPanel.this.start(startMove);
+            ReactionTestClient client =info.getClient();
+
+            if (client != null) {
+            client.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ReactionTestClient client = (ReactionTestClient) e.getSource();
+                        if (client.getIn().getClass().equals(StartMove.class)) {
+                            StartMove startMove = (StartMove) client.getIn();
+                            ReactionButtonsPanel.this.start(startMove);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -71,7 +75,9 @@ public class ReactionButtonsPanel extends JPanel {
             info.info("Time: " + getTimeDuration() + " Time before Start: " + timeBeforeStart + " Number of Buttons: " + currentButtons);
             GameMove gameMove = new GameMove();
             gameMove.time = getTimeDuration();
-            info.getClient().send(gameMove);
+            if (info.getClient() != null) {
+                info.getClient().send(gameMove);
+            }
             //startWithRandomButtons();
         }
     }
