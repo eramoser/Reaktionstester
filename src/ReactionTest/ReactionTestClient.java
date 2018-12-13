@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
@@ -120,24 +122,13 @@ public class ReactionTestClient {
         listener.add(al);
     }
 
-    public static boolean canConnect(String hostName){
-        /*try {
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    return false;
-                }
-            }, MAX_CONNECT_TIMEOUT_DELAY);
-
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return false;
-        }*/
+    /**
+     * Function returns if the connection to a ReactionTestServer is possible (max. time to connect is delayMs)
+     * @param hostName
+     * @param delayMs
+     * @return
+     */
+    public static boolean canConnect(String hostName, long delayMs){
         Runnable handShakeTask = new Runnable() {
             @Override
             public void run() {
@@ -148,7 +139,6 @@ public class ReactionTestClient {
                     client.send(new Disconnect());
                     client.stop();
                 } catch (IOException e) {
-                    e.printStackTrace();
                 }
 
             }
@@ -157,13 +147,23 @@ public class ReactionTestClient {
         try {
             Future<Boolean> future = executorService.submit(handShakeTask, true);
             executorService.shutdown();
-            return future.get(MAX_CONNECT_TIMEOUT_DELAY/1000, TimeUnit.SECONDS);
+            return future.get(delayMs, TimeUnit.MILLISECONDS);
         } catch (TimeoutException ex) {
         } catch (InterruptedException | ExecutionException e) {
             // handle exception
         }
         return false;
     }
+
+    /**
+     * Function returns if the connection to a ReactionTestServer is possible (within a specific time)
+     * @param hostName
+     * @return
+     */
+    public static boolean canConnect(String hostName){
+        return canConnect(hostName, MAX_CONNECT_TIMEOUT_DELAY);
+    }
+
 
 
 }
