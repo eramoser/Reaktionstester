@@ -131,6 +131,8 @@ public class ReactionTestFrame extends JFrame implements Info {
                 buttonsPanel.setClient(client);
 
                 client.start();
+
+                info("Successfully connected to: " + hostname);
             } catch (ConnectException e) {
                 error("Connection Refused");
             } catch (IOException e) {
@@ -138,7 +140,7 @@ public class ReactionTestFrame extends JFrame implements Info {
             }
         } else {
             buttonsPanel.setClient(null);
-            info("Can't connect to server");
+            error("Can't connect to server");
         }
     }
 

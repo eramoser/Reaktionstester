@@ -141,6 +141,13 @@ public class ReactionTestClient {
                     client.start();
                     client.send(new Disconnect());
                     client.stop();
+                } catch (SocketException e) {
+                    // Wait, so that is seems like the connection is not working
+                    try {
+                        Thread.sleep((1000 + delayMs) * 10);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 } catch (IOException e) {
                 }
 
