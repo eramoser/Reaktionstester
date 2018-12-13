@@ -78,6 +78,8 @@ public class ReactionTestServer {
                 // Handle if Client Disconnects
                 if (objectReceived.getClass().equals(Disconnect.class)){
                     clients.remove(client);
+                    client.stop();
+                    System.out.println("Removed Player: " + client.playerName);
                     freeNameIfDefault(client.playerName);
                 }
 
