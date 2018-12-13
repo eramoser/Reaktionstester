@@ -40,30 +40,7 @@ public class ReactionTestServer {
                     client.state = ReactionTestClient.READY_TO_START;
                     client.time = ((GameMove)objectReceived).time;
 
-                    if (allReadyToPlay()) {
-                        StartMove startMove = new StartMove();
-                        PlayerStats playerStats = new PlayerStats();
-
-                        for (ReactionTestClient clienti : clients) {
-                            playerStats.addPlayer(clienti.playerName, clienti.time);
-                        }
-
-                        for (ReactionTestClient clienti : clients) {
-                            clienti.send(startMove);
-                            clienti.state = ReactionTestClient.CURRENTLY_PLAYING;
-
-                            clienti.send(playerStats);
-                        }
-                    }else {
-                        PlayersNotYetFinished playersNotYetFinished = getPlayersNotReady();
-
-
-                        for (ReactionTestClient clienti:clients) {
-                            if (clienti.state == ReactionTestClient.READY_TO_START){
-                                clienti.send(playersNotYetFinished);
-                            }
-                        }
-                    }
+                    startMoveOrPlayersNotFinished();
                 }
 
                 // Handle if Object ClientInfo is received
@@ -81,6 +58,7 @@ public class ReactionTestServer {
                     client.stop();
                     System.out.println("Removed Player: " + client.playerName);
                     freeNameIfDefault(client.playerName);
+                    startMoveOrPlayersNotFinished();
                 }
 
                 // Handle Server Log
@@ -99,6 +77,39 @@ public class ReactionTestServer {
             }
         }
     };
+
+    private void startMoveOrPlayersNotFinished() {
+        if (allReadyToPlay()) {
+            startNewMove();
+        } else {
+            playersNotFinished();
+        }
+    }
+
+    private void playersNotFinished() {
+        PlayersNotYetFinished playersNotYetFinished = getPlayersNotReady();
+        for (ReactionTestClient clienti : clients) {
+            if (clienti.state == ReactionTestClient.READY_TO_START) {
+                clienti.send(playersNotYetFinished);
+            }
+        }
+    }
+
+    private void startNewMove() {
+        StartMove startMove = new StartMove();
+        PlayerStats playerStats = new PlayerStats();
+
+        for (ReactionTestClient clienti : clients) {
+            playerStats.addPlayer(clienti.playerName, clienti.time);
+        }
+
+        for (ReactionTestClient clienti : clients) {
+            clienti.send(startMove);
+            clienti.state = ReactionTestClient.CURRENTLY_PLAYING;
+
+            clienti.send(playerStats);
+        }
+    }
 
     /**
      * Object Respresent all Player which are at the moment not Ready
