@@ -160,6 +160,8 @@ public class ReactionTestServer {
                         p.playerName = getRandomDefaultName();
                         p.send(new ClientInfo(p.playerName));
 
+                        System.out.println("Client added: " + p.playerName);
+
                         if (clients.size() == 1){
                             p.send(new StartMove());
                             p.state = ReactionTestClient.CURRENTLY_PLAYING;

@@ -23,11 +23,10 @@ public class ReactionButtonsPanel extends JPanel {
     private long currentEndTime = 0;
     private int currentButtons = 0;
     private float timeBeforeStart = 0;
-    private Info info;
     private Timer timer;
+    private ReactionTestClient client;
 
-    public ReactionButtonsPanel(Info info) {
-        this.info = info;
+    public ReactionButtonsPanel() {
         this.setLayout(new GridLayout(ReactionTestConstants.ROWS_BUTTONS, ReactionTestConstants.COLS_BUTTONS));
         for (int i = 0; i < ReactionTestConstants.ROWS_BUTTONS; i++) {
             for (int j = 0; j < ReactionTestConstants.COLS_BUTTONS; j++) {
@@ -43,22 +42,22 @@ public class ReactionButtonsPanel extends JPanel {
             }
         }
 
-        if (info != null){
-            ReactionTestClient client =info.getClient();
+    }
 
-            if (client != null) {
-            client.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ReactionTestClient client = (ReactionTestClient) e.getSource();
-                        if (client.getIn().getClass().equals(StartMove.class)) {
-                            StartMove startMove = (StartMove) client.getIn();
-                            ReactionButtonsPanel.this.start(startMove);
-                        }
-                    }
-                });
+    public void setClient(ReactionTestClient client){
+        this.client = client;
+        this.client.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ReactionTestClient client = (ReactionTestClient) e.getSource();
+                System.out.println(client.getIn().getClass().toString());
+                if (client.getIn().getClass().equals(StartMove.class)) {
+                    StartMove startMove = (StartMove) client.getIn();
+                    ReactionButtonsPanel.this.start(startMove);
+                }
             }
-        }
+        });
+        disableAllButtons();
     }
 
     public void initialStart(){
@@ -72,11 +71,10 @@ public class ReactionButtonsPanel extends JPanel {
         if (numberOfEnabledButtons((ReactionButton) actionEvent.getSource()) == 0) {
             currentEndTime = System.currentTimeMillis();
 
-            info.info("Time: " + getTimeDuration() + " Time before Start: " + timeBeforeStart + " Number of Buttons: " + currentButtons);
             GameMove gameMove = new GameMove();
             gameMove.time = getTimeDuration();
-            if (info.getClient() != null) {
-                info.getClient().send(gameMove);
+            if (client != null) {
+                client.send(gameMove);
             }
             //startWithRandomButtons();
         }
@@ -179,7 +177,7 @@ public class ReactionButtonsPanel extends JPanel {
     }
 
     public static int[][] getRandomUniqueButtonNumbers(){
-        ReactionButtonsPanel reactionButtonsPanel = new ReactionButtonsPanel(null);
+        ReactionButtonsPanel reactionButtonsPanel = new ReactionButtonsPanel();
         ReactionButton[] buttons = reactionButtonsPanel.getRandButtons();
         int[][] array = new int[2][buttons.length];
         for (int i = 0;i< buttons.length;i++){
@@ -187,6 +185,14 @@ public class ReactionButtonsPanel extends JPanel {
             array[1][i] = buttons[i].getCol();
         }
         return array;
+    }
+
+    public void disableAllButtons(){
+        for (ReactionButton[] buttonRows:buttons) {
+            for (ReactionButton button:buttonRows) {
+                button.disableReaction();
+            }
+        }
     }
 
     public void start(int[] rows, int[] cols, long timeMs) {
@@ -200,11 +206,9 @@ public class ReactionButtonsPanel extends JPanel {
         if (timer != null){
             timer.cancel();
         }
-        for (ReactionButton[] buttonRows:buttons) {
-            for (ReactionButton button:buttonRows) {
-                button.disableReaction();
-            }
-        }
+
+        disableAllButtons();
+
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override

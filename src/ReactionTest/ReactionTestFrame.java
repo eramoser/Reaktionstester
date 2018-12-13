@@ -13,7 +13,8 @@ public class ReactionTestFrame extends JFrame implements Info {
 
     private ReactionButtonsPanel buttonsPanel;
     private JLabel infoLabel = new JLabel(ReactionTestConstants.START_INFO_TEXT);
-    private JTextField username = new JTextField("");
+    private JTextField hostname = new JTextField(ReactionTestConstants.SERVER_HOST);
+    private JTextField username = new JTextField();
     public ReactionTestClient client;
 
     public ReactionTestFrame() {
@@ -25,9 +26,74 @@ public class ReactionTestFrame extends JFrame implements Info {
         ImageIcon img = new ImageIcon("Logo_440x440.png");
         setIconImage(img.getImage());
 
-        // TODO: Lines for testing
+
+
+        //buttonsPanel.initialStart();
+
+        username.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (client != null) {
+                    ClientInfo clientInfo = new ClientInfo();
+                    clientInfo.playerName = username.getText();
+                    client.send(clientInfo);
+                }
+            }
+        });
+
+        hostname.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                connectToClient(hostname.getText());
+            }
+        });
+
+        username.setSize(200, 10);
+
+        JPanel usernamePanel = new JPanel(new BorderLayout());
+        usernamePanel.add(new JLabel("Username: "), BorderLayout.WEST);
+        usernamePanel.add(username, BorderLayout.CENTER);
+
+        JPanel hostPanel = new JPanel(new BorderLayout());
+        hostPanel.add(new JLabel("Hostname: "), BorderLayout.WEST);
+        hostPanel.add(hostname, BorderLayout.CENTER);
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(hostPanel, BorderLayout.NORTH);
+        topPanel.add(usernamePanel, BorderLayout.SOUTH);
+        add(topPanel, BorderLayout.NORTH);
+        add(infoLabel, BorderLayout.SOUTH);
+
+
+
+
+        addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                if (client != null) {
+                    client.send(new Disconnect());
+                    e.getWindow().dispose();
+                }
+            }
+        });
+
+        buttonsPanel = new ReactionButtonsPanel();
+
+        add(buttonsPanel, BorderLayout.CENTER);
+
+        connectToClient(ReactionTestConstants.SERVER_HOST);
+
+        setVisible(true);
+    }
+
+    private void connectToClient(String hostname){
         try {
-            client = new ReactionTestClient(new Socket(ReactionTestConstants.SERVER_HOST, ReactionTestConstants.SERVER_PORT));
+            if (client != null){
+                client.send(new Disconnect());
+            }
+            client = new ReactionTestClient(new Socket(hostname, ReactionTestConstants.SERVER_PORT));
 
 
             client.addActionListener(new ActionListener() {
@@ -53,63 +119,29 @@ public class ReactionTestFrame extends JFrame implements Info {
                         // Handle Client Info (New Player Name received)
                         if (objectReceived.getClass().equals(ClientInfo.class)){
                             ClientInfo clientInfo = (ClientInfo)objectReceived;
-                            if (clientInfo.playerName != null){
+
+                            if (username.getText().length()<=0){
+                            if (clientInfo.playerName != null) {
                                 username.setText(clientInfo.playerName);
+
+
+                            }
+                            }else {
+                                client.send(new ClientInfo(username.getText()));
                             }
                         }
                     }
                 }
             });
 
+            buttonsPanel.setClient(client);
 
-
-            addWindowListener(new WindowAdapter()
-            {
-                @Override
-                public void windowClosing(WindowEvent e)
-                {
-                    client.send(new Disconnect());
-                    e.getWindow().dispose();
-                }
-            });
-
-
-
-            buttonsPanel = new ReactionButtonsPanel(this);
-            add(buttonsPanel, BorderLayout.CENTER);
-
+            client.start();
         } catch (ConnectException e){
             error("Connection Refused");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //buttonsPanel.initialStart();
-
-        username.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                if (client != null) {
-                    ClientInfo clientInfo = new ClientInfo();
-                    clientInfo.playerName = username.getText();
-                    client.send(clientInfo);
-                }
-            }
-        });
-
-        username.setSize(200, 10);
-
-        JPanel usernamePanel = new JPanel(new BorderLayout());
-        usernamePanel.add(new JLabel("Username: "), BorderLayout.WEST);
-        usernamePanel.add(username, BorderLayout.CENTER);
-        add(usernamePanel, BorderLayout.NORTH);
-        add(infoLabel, BorderLayout.SOUTH);
-
-        if (client != null) {
-            client.start();
-        }
-
-        setVisible(true);
     }
 
     @Override

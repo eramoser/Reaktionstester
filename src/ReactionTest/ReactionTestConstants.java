@@ -16,6 +16,6 @@ public class ReactionTestConstants {
     public static final Color DISABLED_COLOR = Color.BLACK;
     public static final Color ENABLED_COLOR = Color.GREEN;
 
-    public static final String SERVER_HOST = "192.168.97.22";
+    public static final String SERVER_HOST = "localhost";
     public static int SERVER_PORT = 9898;
 }
