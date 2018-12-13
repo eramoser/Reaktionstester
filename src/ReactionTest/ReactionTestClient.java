@@ -60,10 +60,18 @@ public class ReactionTestClient {
         t.start();
     }
 
+    /**
+     * Returns sent Object from Server
+     * @return
+     */
     public Object getIn(){
         return in;
     }
 
+    /**
+     * Sends Object from Client to Server
+     * @param object
+     */
     public void send(Serializable object) {
         if (this.send != null) {
             try {
@@ -75,16 +83,27 @@ public class ReactionTestClient {
         }
     }
 
-    public void stopp() {
+    /**
+     * Stops the client
+     */
+    public void stop() {
         this.running = false;
     }
 
+    /**
+     * Notifys all Listeners from client
+     * @param object
+     */
     public void notifyListener(Object object) {
         for (ActionListener listener : listener) {
             listener.actionPerformed(new ActionEvent(object, 0, object.toString()));
         }
     }
 
+    /**
+     * Adds new listener to Listenerslist
+     * @param al
+     */
     public void addActionListener(ActionListener al) {
         listener.add(al);
     }

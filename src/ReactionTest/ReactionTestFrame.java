@@ -149,10 +149,15 @@ public class ReactionTestFrame extends JFrame implements Info {
         return client;
     }
 
+    /**
+     * Sets Text in the Bottom
+     * @param info
+     */
     @Override
     public void info(String info) {
         infoLabel.setText(info);
     }
+
 
     @Override
     public void error(String error) {
