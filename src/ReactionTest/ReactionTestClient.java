@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,11 +59,12 @@ public class ReactionTestClient {
                 while (running) {
                     try {
                         if (receieve != null) {
-                            in = receieve.readObject();
-
                             // Verarbeite Nachricht
-                            notifyListener(ReactionTestClient.this);
+                            notifyListener(receieve.readObject());
                         }
+                    } catch (SocketException e) {
+                        System.out.println("Socket of Client: " + playerName + " not working -> will be disconnected.");
+                        notifyListener(new Disconnect());
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException e) {
@@ -109,8 +111,9 @@ public class ReactionTestClient {
      * @param object
      */
     public void notifyListener(Object object) {
+        in = object;
         for (ActionListener listener : listener) {
-            listener.actionPerformed(new ActionEvent(object, 0, object.toString()));
+            listener.actionPerformed(new ActionEvent(ReactionTestClient.this, 0, object.toString()));
         }
     }
 
