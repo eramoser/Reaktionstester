@@ -83,7 +83,9 @@ public class ReactionTestFrame extends JFrame implements Info {
 
         add(buttonsPanel, BorderLayout.CENTER);
 
-        connectToClient(ReactionTestConstants.SERVER_HOST);
+        if (ReactionTestClient.canConnect(ReactionTestConstants.SERVER_HOST)) {
+            connectToClient(ReactionTestConstants.SERVER_HOST);
+        }
 
         setVisible(true);
     }
