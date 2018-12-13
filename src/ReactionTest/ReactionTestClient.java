@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -141,7 +142,7 @@ public class ReactionTestClient {
                     client.start();
                     client.send(new Disconnect());
                     client.stop();
-                } catch (SocketException e) {
+                } catch (SocketException | UnknownHostException e) {
                     // Wait, so that is seems like the connection is not working
                     try {
                         Thread.sleep((1000 + delayMs) * 10);
