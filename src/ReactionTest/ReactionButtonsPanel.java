@@ -46,17 +46,19 @@ public class ReactionButtonsPanel extends JPanel {
 
     public void setClient(ReactionTestClient client){
         this.client = client;
-        this.client.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ReactionTestClient client = (ReactionTestClient) e.getSource();
-                System.out.println(client.getIn().getClass().toString());
-                if (client.getIn().getClass().equals(StartMove.class)) {
-                    StartMove startMove = (StartMove) client.getIn();
-                    ReactionButtonsPanel.this.start(startMove);
+        if (client != null) {
+            this.client.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ReactionTestClient client = (ReactionTestClient) e.getSource();
+                    System.out.println(client.getIn().getClass().toString());
+                    if (client.getIn().getClass().equals(StartMove.class)) {
+                        StartMove startMove = (StartMove) client.getIn();
+                        ReactionButtonsPanel.this.start(startMove);
+                    }
                 }
-            }
-        });
+            });
+        }
         disableAllButtons();
     }
 

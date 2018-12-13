@@ -86,7 +86,7 @@ public class ReactionTestServer {
                 // Handle Server Log
                 if (objectReceived.getClass().equals(ServerLog.class)){
                     ServerLog serverLog = (ServerLog)objectReceived;
-                    System.out.println("Message from " + client.playerName + ": " + serverLog.message);
+                    System.out.println("Log: Message from " + client.playerName + ": " + serverLog.message);
                 }
 
                 // sende nachricht an alle clients

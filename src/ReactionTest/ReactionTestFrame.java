@@ -27,9 +27,6 @@ public class ReactionTestFrame extends JFrame implements Info {
         setIconImage(img.getImage());
 
 
-
-        //buttonsPanel.initialStart();
-
         username.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -65,13 +62,9 @@ public class ReactionTestFrame extends JFrame implements Info {
         add(infoLabel, BorderLayout.SOUTH);
 
 
-
-
-        addWindowListener(new WindowAdapter()
-        {
+        addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e)
-            {
+            public void windowClosing(WindowEvent e) {
                 if (client != null) {
                     client.send(new Disconnect());
                     e.getWindow().dispose();
@@ -83,66 +76,69 @@ public class ReactionTestFrame extends JFrame implements Info {
 
         add(buttonsPanel, BorderLayout.CENTER);
 
-        if (ReactionTestClient.canConnect(ReactionTestConstants.SERVER_HOST)) {
-            connectToClient(ReactionTestConstants.SERVER_HOST);
-        }
+        connectToClient(ReactionTestConstants.SERVER_HOST);
+
 
         setVisible(true);
     }
 
-    private void connectToClient(String hostname){
-        try {
-            if (client != null){
-                client.send(new Disconnect());
-            }
-            client = new ReactionTestClient(new Socket(hostname, ReactionTestConstants.SERVER_PORT));
+    private void connectToClient(String hostname) {
+        if (ReactionTestClient.canConnect(hostname)) {
+            try {
+                if (client != null) {
+                    client.send(new Disconnect());
+                }
+                client = new ReactionTestClient(new Socket(hostname, ReactionTestConstants.SERVER_PORT));
 
 
-            client.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent) {
-                    if (actionEvent.getSource().getClass().equals(ReactionTestClient.class)) {
-                        ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
-                        Object objectReceived = client.getIn();
+                client.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if (actionEvent.getSource().getClass().equals(ReactionTestClient.class)) {
+                            ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
+                            Object objectReceived = client.getIn();
 
-                        client.send(new ServerLog("Object received: " + objectReceived.getClass().toString()));
+                            client.send(new ServerLog("Object received: " + objectReceived.getClass().toString()));
 
-                        // Handle if other Players are not Finished
-                        if (objectReceived.getClass().equals(PlayersNotYetFinished.class)){
-                            System.out.println("PlayersNotYetFinished received: "  + username.getText());
-                            info(objectReceived.toString());
-                        }
-
-                        // Handle if other Players are not Finished
-                        if (objectReceived.getClass().equals(PlayerStats.class)){
-                            info(objectReceived.toString());
-                        }
-
-                        // Handle Client Info (New Player Name received)
-                        if (objectReceived.getClass().equals(ClientInfo.class)){
-                            ClientInfo clientInfo = (ClientInfo)objectReceived;
-
-                            if (username.getText().length()<=0){
-                            if (clientInfo.playerName != null) {
-                                username.setText(clientInfo.playerName);
-
-
+                            // Handle if other Players are not Finished
+                            if (objectReceived.getClass().equals(PlayersNotYetFinished.class)) {
+                                info(objectReceived.toString());
                             }
-                            }else {
-                                client.send(new ClientInfo(username.getText()));
+
+                            // Handle if other Players are not Finished
+                            if (objectReceived.getClass().equals(PlayerStats.class)) {
+                                info(objectReceived.toString());
+                            }
+
+                            // Handle Client Info (New Player Name received)
+                            if (objectReceived.getClass().equals(ClientInfo.class)) {
+                                ClientInfo clientInfo = (ClientInfo) objectReceived;
+
+                                if (username.getText().length() <= 0) {
+                                    if (clientInfo.playerName != null) {
+                                        username.setText(clientInfo.playerName);
+
+
+                                    }
+                                } else {
+                                    client.send(new ClientInfo(username.getText()));
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
-            buttonsPanel.setClient(client);
+                buttonsPanel.setClient(client);
 
-            client.start();
-        } catch (ConnectException e){
-            error("Connection Refused");
-        } catch (IOException e) {
-            e.printStackTrace();
+                client.start();
+            } catch (ConnectException e) {
+                error("Connection Refused");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            buttonsPanel.setClient(null);
+            info("Can't connect to server");
         }
     }
 
@@ -153,6 +149,7 @@ public class ReactionTestFrame extends JFrame implements Info {
 
     /**
      * Sets Text in the Bottom
+     *
      * @param info
      */
     @Override
