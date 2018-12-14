@@ -19,15 +19,10 @@ public class ReactionTestFrame extends JFrame implements Info {
         setTitle(ReactionTestConstants.FRAME_TITLE);
         setSize(ReactionTestConstants.WINDOW_WIDTH, ReactionTestConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Open Frame in the middle of Display
-        setLayout(new BorderLayout());
-        ImageIcon img = new ImageIcon("Logo_440x440.png");
-        setIconImage(img.getImage());
+
 
         // TODO: Lines for testing
         try {
-            client = new ReactionTestClient(new Socket(ReactionTestConstants.SERVER_HOST, ReactionTestConstants.SERVER_PORT));
-
 
             client.addActionListener(new ActionListener() {
                 @Override
@@ -36,12 +31,10 @@ public class ReactionTestFrame extends JFrame implements Info {
                         ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
                         Object objectReceived = client.getIn();
 
-                        client.send(new ServerLog("Object received: " + objectReceived.getClass().toString()));
 
                         // Handle if other Players are not Finished
                         if (objectReceived.getClass().equals(PlayersNotYetFinished.class)){
                             System.out.println("PlayersNotYetFinished received: "  + username.getText());
-                            info(objectReceived.toString());
                         }
 
                         // Handle if other Players are not Finished
@@ -51,18 +44,13 @@ public class ReactionTestFrame extends JFrame implements Info {
 
                         // Handle Client Info (New Player Name received)
                         if (objectReceived.getClass().equals(ClientInfo.class)){
-                            ClientInfo clientInfo = (ClientInfo)objectReceived;
-                            if (clientInfo.playerName != null){
-                                username.setText(clientInfo.playerName);
+
                             }
                         }
                     }
                 }
             });
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         buttonsPanel = new ReactionButtonsPanel(this);
         //buttonsPanel.initialStart();
