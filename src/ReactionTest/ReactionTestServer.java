@@ -53,7 +53,14 @@ public class ReactionTestServer {
                             clienti.send(playerStats);
                         }
                     }else {
+                        PlayersNotYetFinished playersNotYetFinished = getPlayersNotReady();
 
+
+                        for (ReactionTestClient clienti:clients) {
+                            if (clienti.state == ReactionTestClient.READY_TO_START){
+                                clienti.send(playersNotYetFinished);
+                            }
+                        }
                     }
                 }
 
@@ -89,7 +96,15 @@ public class ReactionTestServer {
         }
     };
 
-
+    private PlayersNotYetFinished getPlayersNotReady(){
+        PlayersNotYetFinished playersNotYetFinished = new PlayersNotYetFinished();
+        for (ReactionTestClient clienti:clients) {
+            if (clienti.state != ReactionTestClient.READY_TO_START){
+                playersNotYetFinished.playersNotFinished.add(clienti.playerName);
+            }
+        }
+        return playersNotYetFinished;
+    }
 
     private void freeNameIfDefault(String name){
         if (defaultNamesList.contains(name)&&(!availableNames.contains(name))){
@@ -141,6 +156,7 @@ public class ReactionTestServer {
                             p.state = ReactionTestClient.CURRENTLY_PLAYING;
                         }else{
                             p.state = ReactionTestClient.READY_TO_START;
+                            p.send(getPlayersNotReady());
                         }
                     }
 
