@@ -98,6 +98,10 @@ public class ReactionTestServer {
         }
     };
 
+    /**
+     * Object Respresent all Player which are at the moment not Ready
+     * @return
+     */
     private PlayersNotYetFinished getPlayersNotReady(){
         PlayersNotYetFinished playersNotYetFinished = new PlayersNotYetFinished();
         for (ReactionTestClient clienti:clients) {
@@ -108,12 +112,20 @@ public class ReactionTestServer {
         return playersNotYetFinished;
     }
 
+    /**
+     * If player Joins doesn't fill in a name in Textfield he gets one of Default Name List
+     * @param name
+     */
     private void freeNameIfDefault(String name){
         if (defaultNamesList.contains(name)&&(!availableNames.contains(name))){
             availableNames.add(name);
         }
     }
 
+    /**
+     * Returns Available Name from Default Name List
+     * @return
+     */
     private String getRandomDefaultName(){
         String name = "";
         if (availableNames.size() > 0) {
@@ -128,6 +140,10 @@ public class ReactionTestServer {
         return name;
     }
 
+    /**
+     * Sets readyToPlay false if Clients are playing
+     * @return
+     */
     private boolean allReadyToPlay(){
         boolean readyToPlay = true;
         for (ReactionTestClient client:clients) {

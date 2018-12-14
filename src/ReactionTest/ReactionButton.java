@@ -32,11 +32,18 @@ public class ReactionButton extends JButton {
         return col;
     }
 
+
+    /**
+     * Set Background to from ReactionButton in DISABLED_COLOR (Default: Black)
+     */
     public void disableReaction(){
         this.setBackground(ReactionTestConstants.DISABLED_COLOR);
         this.setEnabled(false);
     }
 
+    /**
+     * Set Background to from ReactionButton in ENABLED_COLOR (Default: Green)
+     */
     public void enableReaction(){
         this.setBackground(ReactionTestConstants.ENABLED_COLOR);
         this.setEnabled(true);
