@@ -21,12 +21,30 @@ public class ReactionTestServer {
                 ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
                 Object objectReceived = client.getIn();
 
+                Log.log("Server received (from " + client.playerName + "): Object: " + objectReceived.getClass());
 
+                // Handle ChangeGame
+                if (objectReceived.getClass().equals(ChangeGame.class)) {
+                    ChangeGame changeGame = (ChangeGame) objectReceived;
+
+                    if (!changeGame.gameId.equals(client.game.getGameId())) {
+
+                        client.game.removeClient(client);
+
+                        if (ServerGame.isGameIdContained(games, changeGame.gameId)) {
+                            ServerGame.getGameWithId(games, changeGame.gameId).addClient(client);
+                        } else {
+                            ServerGame game = new ServerGame(changeGame.gameId);
+                            games.add(game);
+                            game.addClient(client);
+                        }
+                    }
+                }
 
                 // Handle Server Log
                 if (objectReceived.getClass().equals(ServerLog.class)){
                     ServerLog serverLog = (ServerLog)objectReceived;
-                    System.out.println("Log: Message from " + client.playerName + ": " + serverLog.message);
+                    Log.log("Log: Message from " + client.playerName + ": " + serverLog.message);
                 }
 
             }else {
@@ -58,7 +76,11 @@ public class ReactionTestServer {
                         ReactionTestClient p = new ReactionTestClient(client);
                         p.addActionListener(clientListener);
 
+                        p.start();
                         defaultGame.addClient(p);
+                        p.send(new ChangeGame(defaultGame.getGameId()));
+
+                        Log.log("Add client: " + p.playerName);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

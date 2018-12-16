@@ -19,6 +19,7 @@ public class ReactionTestFrame extends JFrame implements Info {
     private JLabel infoLabel = new JLabel(ReactionTestConstants.START_INFO_TEXT);
     private JTextField hostname = new JTextField(ReactionTestConstants.SERVER_HOST);
     private JTextField username = new JTextField();
+    private JTextField gameId = new JTextField();
     public ReactionTestClient client;
 
     public ReactionTestFrame() {
@@ -65,20 +66,30 @@ public class ReactionTestFrame extends JFrame implements Info {
             }
         });
 
+        gameId.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                gameChanged();
+            }
 
-        username.setSize(200, 10);
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                gameChanged();
+            }
 
-        JPanel usernamePanel = new JPanel(new BorderLayout());
-        usernamePanel.add(new JLabel("Username: "), BorderLayout.WEST);
-        usernamePanel.add(username, BorderLayout.CENTER);
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                gameChanged();
+            }
+        });
 
-        JPanel hostPanel = new JPanel(new BorderLayout());
-        hostPanel.add(new JLabel("Hostname: "), BorderLayout.WEST);
-        hostPanel.add(hostname, BorderLayout.CENTER);
-
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(hostPanel, BorderLayout.NORTH);
-        topPanel.add(usernamePanel, BorderLayout.SOUTH);
+        JPanel topPanel = new JPanel(new GridLayout(3, 2));
+        topPanel.add(new JLabel("Username: "));
+        topPanel.add(username);
+        topPanel.add(new JLabel("Hostname: "));
+        topPanel.add(hostname);
+        topPanel.add(new JLabel("Game: "));
+        topPanel.add(gameId);
         add(topPanel, BorderLayout.NORTH);
         add(infoLabel, BorderLayout.SOUTH);
 
@@ -99,8 +110,20 @@ public class ReactionTestFrame extends JFrame implements Info {
 
         connectToClient(ReactionTestConstants.SERVER_HOST);
 
-
         setVisible(true);
+    }
+
+    private void gameChanged() {
+        String gameNamePrev = this.gameId.getText();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (gameNamePrev.equals(gameId.getText())) {
+                    client.send(new ChangeGame(gameId.getText()));
+                }
+            }
+        }, 1000);
     }
 
     private void hostNameChanged() {
@@ -143,6 +166,8 @@ public class ReactionTestFrame extends JFrame implements Info {
                             ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
                             Object objectReceived = client.getIn();
 
+                            client.send(new ServerLog("Received Message from Server: " + objectReceived.getClass().toString()));
+
                             // Handle if other Players are not Finished
                             if (objectReceived.getClass().equals(PlayersNotYetFinished.class)) {
                                 info(objectReceived.toString());
@@ -165,6 +190,19 @@ public class ReactionTestFrame extends JFrame implements Info {
                                     }
                                 } else {
                                     client.send(new ClientInfo(username.getText()));
+                                }
+                            }
+
+                            // Handle Change Game (New Game Name received)
+                            if (objectReceived.getClass().equals(ChangeGame.class)) {
+                                ChangeGame changeGame = (ChangeGame) objectReceived;
+
+                                if (gameId.getText().length() <= 0) {
+                                    if (changeGame.gameId != null) {
+                                        gameId.setText(changeGame.gameId);
+                                    }
+                                } else {
+                                    client.send(new ClientInfo(gameId.getText()));
                                 }
                             }
                         }

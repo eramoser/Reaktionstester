@@ -47,6 +47,8 @@ public class ServerGame {
                     startMoveOrPlayersNotFinished();
                 }
 
+                System.out.println("Client: " + client.playerName + " Object received: " + objectReceived.getClass());
+
             } else {
                 System.out.println("Received Message from other class than ReactionTestClient");
             }
@@ -63,11 +65,25 @@ public class ServerGame {
         }
     }
 
+    public static boolean isGameIdContained(ArrayList<ServerGame> serverGames, String id) {
+        return getGameWithId(serverGames, id) != null;
+    }
+
+    public static ServerGame getGameWithId(ArrayList<ServerGame> serverGames, String id) {
+        for (ServerGame sg : serverGames) {
+            if (sg.getGameId().equals(id)) {
+                return sg;
+            }
+        }
+        return null;
+    }
+
     public void addClient(ReactionTestClient client) {
         clients.add(client);
+        client.game = this;
 
         client.addActionListener(clientListener);
-        client.start();
+
         client.playerName = getRandomDefaultName();
         client.send(new ClientInfo(client.playerName));
         if (clients.size() == 1) {
@@ -77,15 +93,6 @@ public class ServerGame {
             client.state = ReactionTestClient.READY_TO_START;
             client.send(getPlayersNotReady());
         }
-    }
-
-    public static boolean isGameIdContained(ArrayList<ServerGame> serverGames, String id) {
-        for (ServerGame sg : serverGames) {
-            if (sg.getGameId().equals(id)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static String getFirstFreeId(ArrayList<ServerGame> serverGames) {
@@ -106,6 +113,7 @@ public class ServerGame {
 
     public void removeClient(ReactionTestClient client) {
         clients.remove(client);
+        client.removeActionListener(clientListener);
     }
 
     private void startMoveOrPlayersNotFinished() {

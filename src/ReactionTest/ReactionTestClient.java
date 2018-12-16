@@ -1,6 +1,7 @@
 package ReactionTest;
 
 import ReactionTest.Messages.Disconnect;
+import com.sun.security.ntlm.Server;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,21 +22,22 @@ public class ReactionTestClient {
     public String playerName = "Anonymous";
     public float time;
     public int state;
-    public static final int READY_TO_START = 0;
-    public static final int CURRENTLY_PLAYING = 1;
-
-    public static final int MAX_CONNECT_TIMEOUT_DELAY = 200; // in ms
-
-    private ObjectInputStream receieve;
-    private ObjectOutputStream send;
-
-    private Object in;
-
-    private ArrayList<ActionListener> listener = new ArrayList<>();
+    public ServerGame game;
 
     public ReactionTestClient(Socket player) {
         this.connection = player;
     }
+    public static final int READY_TO_START = 0;
+
+    public static final int CURRENTLY_PLAYING = 1;
+
+    public static final int MAX_CONNECT_TIMEOUT_DELAY = 200; // in ms
+    private ObjectInputStream receieve;
+
+    private ObjectOutputStream send;
+
+    private Object in;
+    private ArrayList<ActionListener> listener = new ArrayList<>();
 
     public ReactionTestClient(String hostname) throws IOException {
         this.connection = new Socket(hostname, ReactionTestConstants.SERVER_PORT);
@@ -60,8 +62,18 @@ public class ReactionTestClient {
                 while (running) {
                     try {
                         if (receieve != null) {
+
+                            Object object = receieve.readObject();
+
                             // Verarbeite Nachricht
-                            notifyListener(receieve.readObject());
+                            notifyListener(object);
+                        }
+                    } catch (StreamCorruptedException e) {
+                        e.printStackTrace();
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
                         }
                     } catch (SocketException e) {
                         System.out.println("Socket of Client: " + playerName + " not working -> will be disconnected.");
@@ -90,6 +102,8 @@ public class ReactionTestClient {
      * @param object
      */
     public void send(Serializable object) {
+        Log.log("Sent object: " + object.getClass().toString() + " from: ");
+        Thread.dumpStack();
         if (this.send != null) {
             try {
                 send.writeObject(object);
@@ -124,6 +138,10 @@ public class ReactionTestClient {
      */
     public void addActionListener(ActionListener al) {
         listener.add(al);
+    }
+
+    public void removeActionListener(ActionListener al) {
+        listener.remove(al);
     }
 
     /**
