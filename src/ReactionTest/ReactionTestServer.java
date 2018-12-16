@@ -56,7 +56,6 @@ public class ReactionTestServer {
                 if (objectReceived.getClass().equals(Disconnect.class)){
                     clients.remove(client);
                     client.stop();
-                    System.out.println("Removed Player: " + client.playerName);
                     freeNameIfDefault(client.playerName);
                     startMoveOrPlayersNotFinished();
                 }
@@ -189,8 +188,6 @@ public class ReactionTestServer {
                         p.playerName = getRandomDefaultName();
                         p.send(new ClientInfo(p.playerName));
 
-                        System.out.println("Client added: " + p.playerName);
-
                         if (clients.size() == 1){
                             p.send(new StartMove());
                             p.state = ReactionTestClient.CURRENTLY_PLAYING;
@@ -199,7 +196,6 @@ public class ReactionTestServer {
                             p.send(getPlayersNotReady());
                         }
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

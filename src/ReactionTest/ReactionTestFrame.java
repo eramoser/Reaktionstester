@@ -143,8 +143,6 @@ public class ReactionTestFrame extends JFrame implements Info {
                             ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
                             Object objectReceived = client.getIn();
 
-                            client.send(new ServerLog("Object received: " + objectReceived.getClass().toString()));
-
                             // Handle if other Players are not Finished
                             if (objectReceived.getClass().equals(PlayersNotYetFinished.class)) {
                                 info(objectReceived.toString());
