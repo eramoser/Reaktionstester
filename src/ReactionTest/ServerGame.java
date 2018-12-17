@@ -85,6 +85,7 @@ public class ServerGame {
     public void addClient(ReactionTestClient client) {
         clients.add(client);
         client.game = this;
+        client.points = 0;
 
         client.addActionListener(clientListener);
 
@@ -141,8 +142,21 @@ public class ServerGame {
         StartMove startMove = new StartMove();
         PlayerStats playerStats = new PlayerStats();
 
+        ReactionTestClient bestPlayerOfLastRound = null;
         for (ReactionTestClient clienti : clients) {
-            playerStats.addPlayer(clienti.playerName, clienti.time);
+            if (bestPlayerOfLastRound == null){
+                bestPlayerOfLastRound = clienti;
+            }else {
+                if (clienti.time < bestPlayerOfLastRound.time){
+                    bestPlayerOfLastRound = clienti;
+                }
+            }
+        }
+
+        bestPlayerOfLastRound.points++;
+
+        for (ReactionTestClient clienti : clients) {
+            playerStats.addPlayer(clienti.playerName, clienti.points);
         }
 
         for (ReactionTestClient clienti : clients) {

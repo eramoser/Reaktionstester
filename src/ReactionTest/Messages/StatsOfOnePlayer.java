@@ -3,16 +3,16 @@ package ReactionTest.Messages;
 import java.io.Serializable;
 
 public class StatsOfOnePlayer implements Serializable {
-    public StatsOfOnePlayer(String playerName, float time) {
+    public StatsOfOnePlayer(String playerName, float points) {
         this.playerName = playerName;
-        this.time = time;
+        this.points = points;
     }
 
     private String playerName;
-    private float time;
+    private float points;
 
     @Override
     public String toString() {
-        return playerName + ": " + time;
+        return playerName + ": " + points;
     }
 }

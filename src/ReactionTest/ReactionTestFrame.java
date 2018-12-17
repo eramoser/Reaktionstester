@@ -21,6 +21,7 @@ public class ReactionTestFrame extends JFrame implements Info {
     private JTextField hostname = new JTextField(ReactionTestConstants.SERVER_HOST);
     private JTextField username = new JTextField();
     private JTextField gameId = new JTextField();
+    private JTextArea playerStats = new JTextArea(ReactionTestConstants.PLAYER_STATS_INIT);
     public ReactionTestClient client;
 
     public ReactionTestFrame() {
@@ -95,6 +96,7 @@ public class ReactionTestFrame extends JFrame implements Info {
         add(infoLabel, BorderLayout.SOUTH);
 
 
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -107,7 +109,11 @@ public class ReactionTestFrame extends JFrame implements Info {
 
         buttonsPanel = new ReactionButtonsPanel();
 
-        add(buttonsPanel, BorderLayout.CENTER);
+        playerStats.setEditable(false);
+
+        JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonsPanel, playerStats);
+        jSplitPane.setDividerLocation(ReactionTestConstants.DIVIDER_LOCATION);
+        add(jSplitPane, BorderLayout.CENTER);
 
         connectToClient(ReactionTestConstants.SERVER_HOST);
 
@@ -179,7 +185,8 @@ public class ReactionTestFrame extends JFrame implements Info {
 
                             // Handle if other Players are not Finished
                             if (objectReceived.getClass().equals(PlayerStats.class)) {
-                                info(objectReceived.toString());
+                                PlayerStats playerStats = (PlayerStats)objectReceived;
+                                ReactionTestFrame.this.playerStats.setText(playerStats.toString());
                             }
 
                             // Handle Client Info (New Player Name received)

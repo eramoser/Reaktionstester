@@ -22,6 +22,7 @@ public class ReactionTestClient {
     private boolean running = false;
     public String playerName = "Anonymous";
     public float time;
+    public int points = 0;
     public int state;
     public ServerGame game;
 
