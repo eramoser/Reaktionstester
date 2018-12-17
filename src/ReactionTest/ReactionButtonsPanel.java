@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -50,9 +51,11 @@ public class ReactionButtonsPanel extends JPanel {
             this.client.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    ReactionTestClient client = (ReactionTestClient) e.getSource();
-                    if (client.getIn().getClass().equals(StartMove.class)) {
-                        StartMove startMove = (StartMove) client.getIn();
+                    ClientObjectPair pair = (ClientObjectPair)e.getSource();
+                    ReactionTestClient client = pair.client;
+                    Serializable objectReceived = pair.object;
+                    if (objectReceived.getClass().equals(StartMove.class)) {
+                        StartMove startMove = (StartMove) objectReceived;
                         ReactionButtonsPanel.this.start(startMove);
                     }
                 }

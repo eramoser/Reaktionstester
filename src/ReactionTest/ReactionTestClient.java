@@ -1,5 +1,6 @@
 package ReactionTest;
 
+import ReactionTest.Messages.ChangeGame;
 import ReactionTest.Messages.Disconnect;
 import com.sun.security.ntlm.Server;
 
@@ -37,6 +38,7 @@ public class ReactionTestClient {
     private ObjectOutputStream send;
 
     private Object in;
+    private boolean arrayInUse = false;
     private ArrayList<ActionListener> listener = new ArrayList<>();
 
     public ReactionTestClient(String hostname) throws IOException {
@@ -63,9 +65,19 @@ public class ReactionTestClient {
                     try {
                         if (receieve != null) {
 
-                            Object object = receieve.readObject();
+                            Serializable object = (Serializable) receieve.readObject();
+
+
+
+
+                            Log.log("Received Message: " + playerName + " : " + object.getClass().toString());
+                            if (object.getClass().equals(ChangeGame.class)){
+                                Log.log("Changegame");
+                            }
 
                             // Verarbeite Nachricht
+                            waitForArray();
+                            keyArray();
                             notifyListener(object);
                         }
                     } catch (StreamCorruptedException e) {
@@ -77,12 +89,17 @@ public class ReactionTestClient {
                         }
                     } catch (SocketException e) {
                         System.out.println("Socket of Client: " + playerName + " not working -> will be disconnected.");
+
+                        waitForArray();
+                        keyArray();
+                        unkeyArray();
                         notifyListener(new Disconnect());
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
+                    unkeyArray();
                 }
             }
         };
@@ -102,13 +119,33 @@ public class ReactionTestClient {
      * @param object
      */
     public void send(Serializable object) {
-        Log.log("Sent object: " + object.getClass().toString() + " from: ");
-        Thread.dumpStack();
+        Log.log("Object sent: " + object.getClass().toString());
         if (this.send != null) {
             try {
                 send.writeObject(object);
                 send.flush();
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void keyArray(){
+        arrayInUse = true;
+        Log.log("Key");
+    }
+
+    private void unkeyArray(){
+        arrayInUse = false;
+        Log.log("Unkey");
+    }
+
+    private void waitForArray(){
+        boolean active = true;
+        while (arrayInUse&&active){
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -125,10 +162,10 @@ public class ReactionTestClient {
      * Notifys all Listeners from client
      * @param object
      */
-    public void notifyListener(Object object) {
+    public void notifyListener(Serializable object) {
         in = object;
         for (ActionListener listener : listener) {
-            listener.actionPerformed(new ActionEvent(ReactionTestClient.this, 0, object.toString()));
+            listener.actionPerformed(new ActionEvent(new ClientObjectPair(this, object), 0, object.toString()));
         }
     }
 
@@ -137,11 +174,36 @@ public class ReactionTestClient {
      * @param al
      */
     public void addActionListener(ActionListener al) {
-        listener.add(al);
+        Log.log("Wait for Array: variable value: " + arrayInUse);
+        if (arrayInUse){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    waitForArray();
+                    keyArray();
+                    listener.add(al);
+                    unkeyArray();
+                }
+            }).start();
+        }else {
+            listener.add(al);
+        }
     }
 
     public void removeActionListener(ActionListener al) {
-        listener.remove(al);
+        if (arrayInUse){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    waitForArray();
+                    keyArray();
+                    listener.remove(al);
+                    unkeyArray();
+                }
+            }).start();
+        }else {
+            listener.remove(al);
+        }
     }
 
     /**

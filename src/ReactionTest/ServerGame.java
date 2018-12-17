@@ -4,6 +4,7 @@ import ReactionTest.Messages.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ServerGame {
@@ -18,9 +19,10 @@ public class ServerGame {
     private ActionListener clientListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if (actionEvent.getSource().getClass().equals(ReactionTestClient.class)) {
-                ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
-                Object objectReceived = client.getIn();
+            ClientObjectPair pair = (ClientObjectPair)actionEvent.getSource();
+            ReactionTestClient client = pair.client;
+            Serializable objectReceived = pair.object;
+            if (client.getClass().equals(ReactionTestClient.class)) {
 
                 // Handle if Object GameMove is received
                 if (objectReceived.getClass().equals(GameMove.class)) {
@@ -28,6 +30,7 @@ public class ServerGame {
                     client.time = ((GameMove) objectReceived).time;
 
                     startMoveOrPlayersNotFinished();
+                    Log.log("Game Move (" + gameId + ") Received");
                 }
 
                 // Handle if Object ClientInfo is received
@@ -41,6 +44,7 @@ public class ServerGame {
 
                 // Handle if Client Disconnects
                 if (objectReceived.getClass().equals(Disconnect.class)) {
+                    Log.log("Disconnected player " + client.playerName);
                     clients.remove(client);
                     client.stop();
                     freeNameIfDefault(client.playerName);
@@ -50,7 +54,7 @@ public class ServerGame {
                 System.out.println("Client: " + client.playerName + " Object received: " + objectReceived.getClass());
 
             } else {
-                System.out.println("Received Message from other class than ReactionTestClient");
+                System.out.println("Received Message from other class than ReactionTestClient: " + client.getClass().toString());
             }
         }
     };

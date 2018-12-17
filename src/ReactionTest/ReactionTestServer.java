@@ -4,6 +4,7 @@ import ReactionTest.Messages.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -17,9 +18,10 @@ public class ReactionTestServer {
     private ActionListener clientListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if (actionEvent.getSource().getClass().equals(ReactionTestClient.class)) {
-                ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
-                Object objectReceived = client.getIn();
+            ClientObjectPair pair = (ClientObjectPair)actionEvent.getSource();
+            ReactionTestClient client = pair.client;
+            if (client.getClass().equals(ReactionTestClient.class)) {
+                Serializable objectReceived = pair.object;
 
                 Log.log("Server received (from " + client.playerName + "): Object: " + objectReceived.getClass());
 
@@ -41,6 +43,8 @@ public class ReactionTestServer {
                     }
                 }
 
+
+
                 // Handle Server Log
                 if (objectReceived.getClass().equals(ServerLog.class)){
                     ServerLog serverLog = (ServerLog)objectReceived;
@@ -48,13 +52,14 @@ public class ReactionTestServer {
                 }
 
             }else {
-                System.out.println("Received Message from other class than ReactionTestClient");
+                System.out.println("Received Message from other class than ReactionTestClient: " + client.getClass().toString());
             }
         }
     };
 
     public ReactionTestServer(int port) {
         this.port = port;
+        games.add(defaultGame);
 
     }
 

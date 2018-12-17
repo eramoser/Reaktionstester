@@ -8,6 +8,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Timer;
@@ -162,11 +163,14 @@ public class ReactionTestFrame extends JFrame implements Info {
                 client.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
-                        if (actionEvent.getSource().getClass().equals(ReactionTestClient.class)) {
-                            ReactionTestClient client = (ReactionTestClient) actionEvent.getSource();
-                            Object objectReceived = client.getIn();
+                        ClientObjectPair pair = (ClientObjectPair)actionEvent.getSource();
+                        if (pair.client.getClass().equals(ReactionTestClient.class)) {
+
+                            ReactionTestClient client = pair.client;
+                            Serializable objectReceived = pair.object;
 
                             client.send(new ServerLog("Received Message from Server: " + objectReceived.getClass().toString()));
+                            Log.log("Received Message from Server: " + objectReceived.getClass().toString());
 
                             // Handle if other Players are not Finished
                             if (objectReceived.getClass().equals(PlayersNotYetFinished.class)) {
@@ -185,8 +189,6 @@ public class ReactionTestFrame extends JFrame implements Info {
                                 if (username.getText().length() <= 0) {
                                     if (clientInfo.playerName != null) {
                                         username.setText(clientInfo.playerName);
-
-
                                     }
                                 } else {
                                     client.send(new ClientInfo(username.getText()));
