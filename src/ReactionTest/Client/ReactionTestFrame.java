@@ -1,6 +1,11 @@
-package ReactionTest;
+package ReactionTest.Client;
 
-import ReactionTest.Messages.*;
+import ReactionTest.Communication.ClientObjectPair;
+import ReactionTest.Communication.ReactionTestClient;
+import ReactionTest.General.Info;
+import ReactionTest.General.Log;
+import ReactionTest.Communication.Messages.*;
+import ReactionTest.General.ReactionTestConstants;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

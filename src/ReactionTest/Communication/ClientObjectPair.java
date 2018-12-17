@@ -1,4 +1,4 @@
-package ReactionTest;
+package ReactionTest.Communication;
 
 import java.io.Serializable;
 

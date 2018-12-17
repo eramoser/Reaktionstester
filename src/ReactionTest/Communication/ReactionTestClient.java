@@ -1,8 +1,10 @@
-package ReactionTest;
+package ReactionTest.Communication;
 
-import ReactionTest.Messages.ChangeGame;
-import ReactionTest.Messages.Disconnect;
-import com.sun.security.ntlm.Server;
+import ReactionTest.General.Log;
+import ReactionTest.Communication.Messages.ChangeGame;
+import ReactionTest.Communication.Messages.Disconnect;
+import ReactionTest.General.ReactionTestConstants;
+import ReactionTest.Server.ServerGame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,18 +12,14 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.*;
 
 public class ReactionTestClient {
     private Socket connection;
     private boolean running = false;
     public String playerName = "Anonymous";
-    public float time;
+    public float time = 0;
     public int points = 0;
     public int state;
     public ServerGame game;

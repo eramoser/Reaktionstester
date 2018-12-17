@@ -1,4 +1,4 @@
-package ReactionTest;
+package ReactionTest.General;
 
 import java.awt.*;
 

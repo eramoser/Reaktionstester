@@ -1,6 +1,10 @@
-package ReactionTest;
+package ReactionTest.Server;
 
-import ReactionTest.Messages.*;
+import ReactionTest.Communication.ClientObjectPair;
+import ReactionTest.Communication.ReactionTestClient;
+import ReactionTest.General.Log;
+import ReactionTest.Communication.Messages.*;
+import ReactionTest.Client.ReactionButtonsPanel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +43,7 @@ public class ServerGame {
                     if (clientInfo.playerName != null) {
                         freeNameIfDefault(client.playerName);
                         client.playerName = clientInfo.playerName;
+                        useNameIfDefault(client.playerName);
                     }
                 }
 
@@ -147,13 +152,17 @@ public class ServerGame {
             if (bestPlayerOfLastRound == null){
                 bestPlayerOfLastRound = clienti;
             }else {
-                if (clienti.time < bestPlayerOfLastRound.time){
-                    bestPlayerOfLastRound = clienti;
+                if (clienti.time != 0) {
+                    if (clienti.time < bestPlayerOfLastRound.time) {
+                        bestPlayerOfLastRound = clienti;
+                    }
                 }
             }
         }
 
-        bestPlayerOfLastRound.points++;
+        if (bestPlayerOfLastRound != null){
+            bestPlayerOfLastRound.points++;
+        }
 
         for (ReactionTestClient clienti : clients) {
             playerStats.addPlayer(clienti.playerName, clienti.points);
@@ -190,6 +199,12 @@ public class ServerGame {
     private void freeNameIfDefault(String name) {
         if (defaultNamesList.contains(name) && (!availableNames.contains(name))) {
             availableNames.add(name);
+        }
+    }
+
+    private void useNameIfDefault(String name){
+        if (defaultNamesList.contains(name)&&availableNames.contains(name)){
+            availableNames.remove(name);
         }
     }
 

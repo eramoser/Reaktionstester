@@ -1,4 +1,6 @@
-package ReactionTest;
+package ReactionTest.General;
+
+import ReactionTest.Communication.ReactionTestClient;
 
 public interface Info {
     public ReactionTestClient getClient();

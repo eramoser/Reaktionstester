@@ -1,6 +1,9 @@
-package ReactionTest;
+package ReactionTest.Server;
 
-import ReactionTest.Messages.*;
+import ReactionTest.Communication.ClientObjectPair;
+import ReactionTest.Communication.ReactionTestClient;
+import ReactionTest.General.Log;
+import ReactionTest.Communication.Messages.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

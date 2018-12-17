@@ -1,4 +1,6 @@
-package ReactionTest;
+package ReactionTest.Client;
+
+import ReactionTest.General.ReactionTestConstants;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

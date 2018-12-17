@@ -1,8 +1,10 @@
-package ReactionTest;
+package ReactionTest.Client;
 
-import ReactionTest.Messages.ClientInfo;
-import ReactionTest.Messages.GameMove;
-import ReactionTest.Messages.StartMove;
+import ReactionTest.Communication.ClientObjectPair;
+import ReactionTest.Communication.ReactionTestClient;
+import ReactionTest.Communication.Messages.GameMove;
+import ReactionTest.Communication.Messages.StartMove;
+import ReactionTest.General.ReactionTestConstants;
 
 import javax.swing.*;
 import java.awt.*;

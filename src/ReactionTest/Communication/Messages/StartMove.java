@@ -1,6 +1,6 @@
-package ReactionTest.Messages;
+package ReactionTest.Communication.Messages;
 
-import ReactionTest.ReactionButtonsPanel;
+import ReactionTest.Client.ReactionButtonsPanel;
 
 import java.io.Serializable;
 
