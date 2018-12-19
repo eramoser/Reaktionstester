@@ -206,7 +206,7 @@ public class ReactionTestClient {
     }
 
     /**
-     * Function returns if the connection to a ReactionTestServer is possible (max. time to connect is delayMs)
+     * Function returns if the connection to a Server is possible (max. time to connect is delayMs)
      * @param hostName
      * @param delayMs
      * @return
@@ -246,7 +246,7 @@ public class ReactionTestClient {
     }
 
     /**
-     * Function returns if the connection to a ReactionTestServer is possible (within a specific time)
+     * Function returns if the connection to a Server is possible (within a specific time)
      * @param hostName
      * @return
      */

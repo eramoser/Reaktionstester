@@ -2,7 +2,6 @@ package ReactionTest.Client;
 
 import ReactionTest.Communication.ClientObjectPair;
 import ReactionTest.Communication.ReactionTestClient;
-import ReactionTest.General.Info;
 import ReactionTest.General.Log;
 import ReactionTest.Communication.Messages.*;
 import ReactionTest.General.ReactionTestConstants;
@@ -19,7 +18,7 @@ import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ReactionTestFrame extends JFrame implements Info {
+public class Client extends JFrame {
 
     private ReactionButtonsPanel buttonsPanel;
     private JLabel infoLabel = new JLabel(ReactionTestConstants.START_INFO_TEXT);
@@ -32,7 +31,7 @@ public class ReactionTestFrame extends JFrame implements Info {
     private JScrollPane chatScrollPane;
     public ReactionTestClient client;
 
-    public ReactionTestFrame() {
+    public Client() {
         setTitle(ReactionTestConstants.FRAME_TITLE);
         setSize(ReactionTestConstants.WINDOW_WIDTH, ReactionTestConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -232,7 +231,7 @@ public class ReactionTestFrame extends JFrame implements Info {
                             // Handle if other Players are not Finished
                             if (objectReceived.getClass().equals(PlayerStats.class)) {
                                 PlayerStats playerStats = (PlayerStats)objectReceived;
-                                ReactionTestFrame.this.playerStats.setText(playerStats.toString());
+                                Client.this.playerStats.setText(playerStats.toString());
                             }
 
                             // Handle Client Info (New Player Name received)
@@ -300,24 +299,21 @@ public class ReactionTestFrame extends JFrame implements Info {
         }
     }
 
-    @Override
-    public ReactionTestClient getClient() {
-        return client;
-    }
-
     /**
      * Sets Text in the Bottom
      *
      * @param info
      */
-    @Override
     public void info(String info) {
         infoLabel.setText(info);
     }
 
 
-    @Override
     public void error(String error) {
         info(error);
+    }
+
+    public static void main(String[] args) {
+        new Client();
     }
 }

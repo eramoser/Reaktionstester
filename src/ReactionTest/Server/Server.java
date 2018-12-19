@@ -4,6 +4,7 @@ import ReactionTest.Communication.ClientObjectPair;
 import ReactionTest.Communication.ReactionTestClient;
 import ReactionTest.General.Log;
 import ReactionTest.Communication.Messages.*;
+import ReactionTest.General.ReactionTestConstants;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ReactionTestServer {
+public class Server {
     private int port;
     private boolean running = false;
     private ArrayList<ServerGame> games = new ArrayList<>();
@@ -60,7 +61,7 @@ public class ReactionTestServer {
         }
     };
 
-    public ReactionTestServer(int port) {
+    public Server(int port) {
         this.port = port;
         games.add(defaultGame);
 
@@ -100,6 +101,11 @@ public class ReactionTestServer {
 
     public void stopp(){
         this.running = false;
+    }
+
+    public static void main(String[] args) {
+        Server server = new Server(ReactionTestConstants.SERVER_PORT);
+        server.start();
     }
 
 }
