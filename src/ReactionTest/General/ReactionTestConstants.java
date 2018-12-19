@@ -6,6 +6,7 @@ public class ReactionTestConstants {
     public static final String FRAME_TITLE = "Reaction Tester (Fuchs/Ramoser)";
     public static final String START_INFO_TEXT = "Welcome to the Reaction Tester by Fuchs and Ramoser";
     public static final String PLAYER_STATS_INIT = "Player stats:";
+    public static final String DEFAULT_CHAT_MESSAGE = "Say \"Hi\"";
     public static final int WINDOW_WIDTH = 750;
     public static final int WINDOW_HEIGHT = 500;
     public static final int DIVIDER_LOCATION = 400;

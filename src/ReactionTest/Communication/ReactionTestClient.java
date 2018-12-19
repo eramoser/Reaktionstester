@@ -87,7 +87,7 @@ public class ReactionTestClient {
                             e1.printStackTrace();
                         }
                     } catch (SocketException e) {
-                        System.out.println("Socket of Client: " + playerName + " not working -> will be disconnected.");
+                        System.err.println("Socket of Client: " + playerName + " not working -> will be disconnected.");
 
                         waitForArray();
                         keyArray();

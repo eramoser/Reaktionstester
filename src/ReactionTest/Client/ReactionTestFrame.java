@@ -28,7 +28,7 @@ public class ReactionTestFrame extends JFrame implements Info {
     private JTextField gameId = new JTextField();
     private JTextArea playerStats = new JTextArea(ReactionTestConstants.PLAYER_STATS_INIT);
     private JTextArea chatArea = new JTextArea();
-    private JTextField chatInput = new JTextField("");
+    private JTextField chatInput = new JTextField(ReactionTestConstants.DEFAULT_CHAT_MESSAGE);
     private JScrollPane chatScrollPane;
     public ReactionTestClient client;
 
@@ -136,6 +136,22 @@ public class ReactionTestFrame extends JFrame implements Info {
         chatScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         chat.add(chatScrollPane, BorderLayout.CENTER);
         chat.add(chatInput, BorderLayout.SOUTH);
+
+        chatInput.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                if (chatInput.getText().equals(ReactionTestConstants.DEFAULT_CHAT_MESSAGE)){
+                    chatInput.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                if (chatInput.getText().equals("")){
+                    chatInput.setText(ReactionTestConstants.DEFAULT_CHAT_MESSAGE);
+                }
+            }
+        });
 
         JSplitPane rightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, playerStats, chat);
 

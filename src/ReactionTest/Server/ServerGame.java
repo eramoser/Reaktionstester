@@ -45,6 +45,8 @@ public class ServerGame {
                         freeNameIfDefault(client.playerName);
                         client.playerName = clientInfo.playerName;
                         useNameIfDefault(client.playerName);
+
+                        sendPlayerStats();
                     }
                 }
 
@@ -66,6 +68,11 @@ public class ServerGame {
                     client.stop();
                     freeNameIfDefault(client.playerName);
                     startMoveOrPlayersNotFinished();
+
+                    if (clients.size() > 1){
+                        sendPlayerStats();
+
+                    }
                 }
 
                 System.out.println("Client: " + client.playerName + " Object received: " + objectReceived.getClass());
@@ -75,6 +82,15 @@ public class ServerGame {
             }
         }
     };
+
+    public void sendPlayerStats(){
+        if (clients.size()>0) {
+            PlayerStats stats = getPlayerStats();
+            for (ReactionTestClient clienti : clients) {
+                clienti.send(stats);
+            }
+        }
+    }
 
 
     public ServerGame(String gameId) {
@@ -116,7 +132,9 @@ public class ServerGame {
             client.send(getPlayersNotReady());
         }
         client.send(new Chat(chat));
-        client.send(getPlayerStats());
+
+        //sendPlayerStats();
+
     }
 
     public static String getFirstFreeId(ArrayList<ServerGame> serverGames) {

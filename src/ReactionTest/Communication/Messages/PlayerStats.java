@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class PlayerStats implements Serializable {
+    public static final long serialVersionUID = -6667962672056816933L;
     ArrayList<StatsOfOnePlayer> players = new ArrayList<>();
 
     public void addPlayer(String playerName, int points){

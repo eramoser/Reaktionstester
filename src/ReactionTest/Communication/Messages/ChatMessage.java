@@ -20,6 +20,6 @@ public class ChatMessage implements Serializable {
 
     @Override
     public String toString() {
-        return new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(date) + " " + playerName + ": " + message;
+        return new SimpleDateFormat("HH:mm").format(date) + " " + playerName + ": " + message;
     }
 }
