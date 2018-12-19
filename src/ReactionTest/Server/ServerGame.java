@@ -20,6 +20,7 @@ public class ServerGame {
     private String[] defaultPlayerNames = {"\"Nur-Kurz-aufs-Klo\" Jack", "Kopfrechnengenie Wenzl", "Tesla Jacki", "Dirty JackSchabrack", "\"Des-Wochnend-dring-I-nix\" Waunz"};
     private ArrayList<String> defaultNamesList = new ArrayList<>();
     private ArrayList<String> availableNames = new ArrayList<>();
+    private ArrayList<ChatMessage> chat = new ArrayList<>();
     private ActionListener clientListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
@@ -44,6 +45,17 @@ public class ServerGame {
                         freeNameIfDefault(client.playerName);
                         client.playerName = clientInfo.playerName;
                         useNameIfDefault(client.playerName);
+                    }
+                }
+
+                // Handle if Object ChatMessage is received
+                if (objectReceived.getClass().equals(ChatMessage.class)) {
+                    ChatMessage chatMessage = (ChatMessage) objectReceived;
+                    chatMessage.playerName = client.playerName;
+                    chat.add(chatMessage);
+
+                    for (ReactionTestClient clienti:clients) {
+                        clienti.send(new Chat(chat));
                     }
                 }
 
@@ -103,6 +115,8 @@ public class ServerGame {
             client.state = ReactionTestClient.READY_TO_START;
             client.send(getPlayersNotReady());
         }
+        client.send(new Chat(chat));
+        client.send(getPlayerStats());
     }
 
     public static String getFirstFreeId(ArrayList<ServerGame> serverGames) {
@@ -174,6 +188,14 @@ public class ServerGame {
 
             clienti.send(playerStats);
         }
+    }
+
+    private PlayerStats getPlayerStats(){
+        PlayerStats playerStats = new PlayerStats();
+        for (ReactionTestClient clienti : clients) {
+            playerStats.addPlayer(clienti.playerName, clienti.points);
+        }
+        return playerStats;
     }
 
     /**

@@ -27,6 +27,9 @@ public class ReactionTestFrame extends JFrame implements Info {
     private JTextField username = new JTextField();
     private JTextField gameId = new JTextField();
     private JTextArea playerStats = new JTextArea(ReactionTestConstants.PLAYER_STATS_INIT);
+    private JTextArea chatArea = new JTextArea();
+    private JTextField chatInput = new JTextField("");
+    private JScrollPane chatScrollPane;
     public ReactionTestClient client;
 
     public ReactionTestFrame() {
@@ -90,17 +93,28 @@ public class ReactionTestFrame extends JFrame implements Info {
             }
         });
 
-        JPanel topPanel = new JPanel(new GridLayout(3, 2));
-        topPanel.add(new JLabel("Username: "));
-        topPanel.add(username);
-        topPanel.add(new JLabel("Hostname: "));
-        topPanel.add(hostname);
-        topPanel.add(new JLabel("Game: "));
-        topPanel.add(gameId);
+        chatInput.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                client.send(new ChatMessage(chatInput.getText()));
+                chatInput.setText("");
+            }
+        });
+
+        JPanel topLeftPanel = new JPanel(new GridLayout(3, 1));
+        JPanel topRightPanel = new JPanel(new GridLayout(3, 2));
+        topLeftPanel.add(new JLabel("Username: "));
+        topRightPanel.add(username);
+        topLeftPanel.add(new JLabel("Hostname: "));
+        topRightPanel.add(hostname);
+        topLeftPanel.add(new JLabel("Game: "));
+        topRightPanel.add(gameId);
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(topLeftPanel, BorderLayout.WEST);
+        topPanel.add(topRightPanel, BorderLayout.CENTER);
         add(topPanel, BorderLayout.NORTH);
         add(infoLabel, BorderLayout.SOUTH);
-
-
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -116,9 +130,20 @@ public class ReactionTestFrame extends JFrame implements Info {
 
         playerStats.setEditable(false);
 
-        JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonsPanel, playerStats);
+        JPanel chat = new JPanel(new BorderLayout());
+        chatArea.setEditable(false);
+        chatScrollPane = new JScrollPane(chatArea);
+        chatScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        chat.add(chatScrollPane, BorderLayout.CENTER);
+        chat.add(chatInput, BorderLayout.SOUTH);
+
+        JSplitPane rightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, playerStats, chat);
+
+        JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonsPanel, rightSplitPane);
         jSplitPane.setDividerLocation(ReactionTestConstants.DIVIDER_LOCATION);
         add(jSplitPane, BorderLayout.CENTER);
+
+        rightSplitPane.setDividerLocation(ReactionTestConstants.WINDOW_HEIGHT/3);
 
         connectToClient(ReactionTestConstants.SERVER_HOST);
 
@@ -218,6 +243,23 @@ public class ReactionTestFrame extends JFrame implements Info {
                                 } else {
                                     client.send(new ClientInfo(gameId.getText()));
                                 }
+                            }
+
+                            // Handle Chat received
+                            if (objectReceived.getClass().equals(Chat.class)) {
+                                Chat chat = (Chat) objectReceived;
+
+                                chatArea.setText(chat.toString());
+
+                                JScrollBar vertical = chatScrollPane.getVerticalScrollBar();
+                                vertical.setValue( vertical.getMaximum() );
+
+                                repaint();
+                            }
+
+                            // Handle StartMove
+                            if (objectReceived.getClass().equals(StartMove.class)) {
+                                info(" ");
                             }
                         }
                     }
