@@ -29,6 +29,8 @@ public class Client extends JFrame {
     private JTextArea chatArea = new JTextArea();
     private JTextField chatInput = new JTextField(ReactionTestConstants.DEFAULT_CHAT_MESSAGE);
     private JScrollPane chatScrollPane;
+    private Timer reconnectTimer = new Timer();
+    private static final int RECONNECT_DELAY = 500; // 500ms
     public ReactionTestClient client;
 
     public Client() {
@@ -58,6 +60,13 @@ public class Client extends JFrame {
             }
         });
 
+        username.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                usernameChanged();
+            }
+        });
+
         hostname.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -75,6 +84,13 @@ public class Client extends JFrame {
             }
         });
 
+        hostname.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                hostNameChanged();
+            }
+        });
+
         gameId.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -88,6 +104,12 @@ public class Client extends JFrame {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
+                gameChanged();
+            }
+        });
+        gameId.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 gameChanged();
             }
         });
@@ -173,6 +195,8 @@ public class Client extends JFrame {
             public void run() {
                 if (gameNamePrev.equals(gameId.getText())) {
                     client.send(new ChangeGame(gameId.getText()));
+                    client.send(new ClientInfo(username.getText()));
+                    buttonsPanel.disableAllButtons();
                 }
             }
         }, 1000);
@@ -204,9 +228,12 @@ public class Client extends JFrame {
 
     private void connectToClient(String hostname) {
         if (ReactionTestClient.canConnect(hostname)) {
+                reconnectTimer.cancel();
+
             try {
                 if (client != null) {
                     client.send(new Disconnect());
+                    client.stop();
                 }
                 client = new ReactionTestClient(new Socket(hostname, ReactionTestConstants.SERVER_PORT));
 
@@ -296,6 +323,12 @@ public class Client extends JFrame {
             }
             buttonsPanel.setClient(null);
             error("Can't connect to server");
+            reconnectTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    connectToClient(hostname);
+                }
+            }, RECONNECT_DELAY);
         }
     }
 

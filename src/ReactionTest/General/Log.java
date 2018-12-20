@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 public class Log {
-    private static final boolean LOG = true;
+    private static final boolean LOG = false;
 
     public static void log(String text) {
         if (LOG) {

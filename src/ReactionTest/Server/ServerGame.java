@@ -44,6 +44,7 @@ public class ServerGame {
                     if (clientInfo.playerName != null) {
                         freeNameIfDefault(client.playerName);
                         client.playerName = clientInfo.playerName;
+                        Log.log("Received ClientInfo from Client: " + client.playerName);
                         useNameIfDefault(client.playerName);
 
                         sendPlayerStats();
@@ -75,8 +76,6 @@ public class ServerGame {
                     }
                 }
 
-                System.out.println("Client: " + client.playerName + " Object received: " + objectReceived.getClass());
-
             } else {
                 System.out.println("Received Message from other class than ReactionTestClient: " + client.getClass().toString());
             }
@@ -85,9 +84,12 @@ public class ServerGame {
 
     public void sendPlayerStats(){
         if (clients.size()>0) {
-            PlayerStats stats = getPlayerStats();
-            for (ReactionTestClient clienti : clients) {
-                clienti.send(stats);
+            synchronized (clients) {
+                PlayerStats stats = getPlayerStats();
+
+                for (ReactionTestClient clienti : clients) {
+                    clienti.send(stats);
+                }
             }
         }
     }
@@ -122,8 +124,11 @@ public class ServerGame {
 
         client.addActionListener(clientListener);
 
-        client.playerName = getRandomDefaultName();
+        if (client.playerName.equals("")){
+            client.playerName = getRandomDefaultName();
+        }
         client.send(new ClientInfo(client.playerName));
+        Log.log("Send client Name from Server to Client : " + client.playerName);
         if (clients.size() == 1) {
             client.send(new StartMove());
             client.state = ReactionTestClient.CURRENTLY_PLAYING;
@@ -132,6 +137,7 @@ public class ServerGame {
             client.send(getPlayersNotReady());
         }
         client.send(new Chat(chat));
+        sendPlayerStats();
 
         //sendPlayerStats();
 
@@ -156,6 +162,8 @@ public class ServerGame {
     public void removeClient(ReactionTestClient client) {
         clients.remove(client);
         client.removeActionListener(clientListener);
+
+        startMoveOrPlayersNotFinished();
     }
 
     private void startMoveOrPlayersNotFinished() {

@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 public class ReactionTestClient {
     private Socket connection;
     private boolean running = false;
-    public String playerName = "Anonymous";
+    public String playerName = "";
     public float time = 0;
     public int points = 0;
     public int state;
@@ -79,7 +79,9 @@ public class ReactionTestClient {
                             keyArray();
                             notifyListener(object);
                         }
-                    } catch (StreamCorruptedException e) {
+                    } catch (EOFException e){
+                    } catch(StreamCorruptedException e) {
+
                         e.printStackTrace();
                         try {
                             Thread.sleep(1000);
@@ -87,8 +89,6 @@ public class ReactionTestClient {
                             e1.printStackTrace();
                         }
                     } catch (SocketException e) {
-                        System.err.println("Socket of Client: " + playerName + " not working -> will be disconnected.");
-
                         waitForArray();
                         keyArray();
                         unkeyArray();
@@ -96,7 +96,6 @@ public class ReactionTestClient {
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
                     }
                     unkeyArray();
                 }
@@ -119,11 +118,12 @@ public class ReactionTestClient {
      */
     public void send(Serializable object) {
         Log.log("Object sent: " + object.getClass().toString());
-        if (this.send != null) {
+        if (this.send != null&&!connection.isClosed()) {
             try {
                 send.writeObject(object);
                 send.flush();
-            } catch (IOException e) {
+            } catch (SocketException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -155,6 +155,11 @@ public class ReactionTestClient {
      */
     public void stop() {
         this.running = false;
+        try {
+            connection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
