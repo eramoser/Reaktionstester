@@ -34,6 +34,7 @@ public class Client extends JFrame {
     public ReactionTestClient client;
 
     public Client() {
+        System.out.println("Falls bei Game nicht automatisch eine Default Zahl eingegeben wurde, muss nochmal die Adresse hostname bestätigt werden");
         setTitle(ReactionTestConstants.FRAME_TITLE);
         setSize(ReactionTestConstants.WINDOW_WIDTH, ReactionTestConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
